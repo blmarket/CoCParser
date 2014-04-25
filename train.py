@@ -3,7 +3,15 @@ from skimage import io
 import sklearn
 import numpy as np
 
-df = pd.read_csv('train.csv', index_col = 0)
+df = pd.read_csv('xs.csv', index_col = 0)
+
+print df
+
+df['label'] = [None] * len(df)
+
+df.to_csv('train.csv')
+
+df = pd.read_csv('xs.csv')
 
 cnt = 0
 for it in df.iterrows():
