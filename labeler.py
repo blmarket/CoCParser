@@ -2,7 +2,7 @@ import numpy as np
 from skimage import io
 
 def label(row):
-    img = np.reshape(row[:-1], (52, 1024))
+    img = np.reshape(row, (52, 1024))
     io.imshow(img)
 
     yn = raw_input('YN? : ')
