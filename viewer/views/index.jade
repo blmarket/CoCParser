@@ -11,12 +11,12 @@ html(ng-app='cocviewer')
       .table { display: table; }
       section { display: table-row; }
       section p,div { display: table-cell; }
-      section .label { max-width: 100px; }
-      .label form { max-width: 20px; halign: center; }
-      .label form input { width: 20px; }
+      section .label { width: 100px; }
+      .label form { max-width: 80px; halign: center; }
+      .label form input { width: 80px; }
   body
     div(ng-controller='SampleListingCtrl', ng-init='load()')
-      div(ng-init="labels=['attack','predict_attack','atkstars','predict_atkstars']")
+      div(ng-init="labels=['name', 'attack', 'predict_attack', 'atkstars', 'predict_atkstars']")
 
       div.table
         section.title

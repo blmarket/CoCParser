@@ -47,7 +47,7 @@ app.get '/img/:id', (req, res, next) ->
   return
 
 app.get '/samples', (req, res) ->
-  pool.query 'SELECT * FROM samples WHERE predict_attack = 1 ORDER BY RAND() LIMIT 20', [], (err, rows) ->
+  pool.query 'SELECT * FROM samples WHERE predict_attack = 1 ORDER BY name LIMIT 200', [], (err, rows) ->
     res.jsonp rows
   return
 
