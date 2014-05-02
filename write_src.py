@@ -12,15 +12,14 @@ from flickr import fetch_images
 
 title = '20140501'
 
-L = chain.from_iterable(parse(filename) for filename in glob.glob('*.png'))
+# L = chain.from_iterable(parse(filename) for filename in glob.glob('*.png'))
+L = chain.from_iterable(parse(filename) for filename in fetch_images(title))
 LL = (pickle.dumps(list(it)) for it in L)
 
 con = mdb.connect('localhost', 'root', '', 'cocparser')
 for row in LL:
     df = pd.DataFrame([ row ], columns = ['DATA'])
     df['category'] = [ title ]
-
-    print df
 
     pd.io.sql.write_frame(df, 'src', con, flavor = 'mysql', if_exists = 'append')
     con.commit()
