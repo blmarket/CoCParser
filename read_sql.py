@@ -8,15 +8,17 @@ from labeler import label
 # con = sqlite3.connect('db.sqlite')
 con = mdb.connect('localhost', 'root', '', 'cocparser')
 
-LABEL_NAME = 'attack_stars'
+PRECONDITION = '`predict_attack` = 1'
+PRECONDITION = '1'
+LABEL_NAME = 'attack'
 
 df = pd.io.sql.read_frame('''
 SELECT `src`.`id`, `DATA` FROM `src` LEFT JOIN `samples` ON src.id = src_id 
-WHERE `predict_attack` = '1' 
+WHERE %s  
 AND `%s` IS NULL
 ORDER BY RAND() 
 LIMIT 20
-''' % (LABEL_NAME), con)
+''' % (PRECONDITION, LABEL_NAME), con)
 
 for i in xrange(len(df)):
     src_id = df.loc[i, 'id']
