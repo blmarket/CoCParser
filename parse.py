@@ -14,8 +14,9 @@ def parse(filename):
             diff = i - pi
             if diff > 50 and diff < 60:
                 slit = image[i-52:i]
-                data = slit.flatten()
-                yield data
+                yield slit
+                # data = slit.flatten()
+                # yield data
                 # io.imshow(slit)
             if __name__ == "__main__":
                 print i, cnt, i-pi
