@@ -2,6 +2,7 @@ doctype html
 html(ng-app='cocviewer')
   head
     title hello world
+    script(src='//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js')
     script(src='//ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.min.js')
     script(src='//ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular-resource.min.js')
     script(src='/public/app.js')
@@ -9,18 +10,23 @@ html(ng-app='cocviewer')
     style.
       .table { display: table; }
       section { display: table-row; }
-      section p { display: table-cell; width: 40px; }
+      section p,div { display: table-cell; }
+      section .label { max-width: 100px; }
+      .label form { max-width: 20px; halign: center; }
+      .label form input { width: 20px; }
   body
     div(ng-controller='SampleListingCtrl', ng-init='load()')
       div(ng-init="labels=['attack','predict_attack','atkstars','predict_atkstars']")
 
       div.table
         section.title
+          p ID
           p Image
-          p(ng-repeat='label in labels')
+          p.label(ng-repeat='label in labels')
             {{label}}
         section(ng-repeat='sample in samples')
-          form(method='POST', action='/update')
-            p: img(src="/img/{{sample.src_id}}")
-            p(ng-repeat='label in labels')
-              {{sample[label]}}
+          p {{sample['src_id']}}
+          p: img(src="/img/{{sample.src_id}}")
+          div.label(ng-repeat='label in labels')
+            form(ng-submit='submit(sample)')
+              input(name='val', type='text', ng-model='sample[label]')

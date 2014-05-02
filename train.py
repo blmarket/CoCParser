@@ -8,7 +8,7 @@ from sklearn import svm
 from sklearn.ensemble import RandomForestClassifier as RF
 import numpy as np
 
-LABEL_NAME = 'attack_stars'
+LABEL_NAME = 'atkstars'
 PREDICT_NAME = 'predict_' + LABEL_NAME
 
 con = mdb.connect('localhost', 'root', '', 'cocparser')

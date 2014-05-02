@@ -2,8 +2,12 @@ angular.module 'cocviewer', [ 'ngResource' ]
 
 SampleListingCtrl = ($scope, $resource) ->
   $scope.samples = []
-  Samples = $resource '/samples'
+  Samples = $resource '/samples/:id'
   $scope.samples = Samples.query()
+
+  $scope.submit = (sample) ->
+    sample.$save()
+    return
   return
 
 # ADCtrl = ($scope, $resource) ->

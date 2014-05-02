@@ -9,6 +9,7 @@ http = require 'http'
 express = require 'express'
 morgan = require 'morgan'
 mysql = require 'mysql'
+bodyParser = require 'body-parser'
 
 pool = mysql.createPool {
   host: 'localhost'
@@ -46,8 +47,27 @@ app.get '/img/:id', (req, res, next) ->
   return
 
 app.get '/samples', (req, res) ->
-  pool.query 'SELECT * FROM samples ORDER BY RAND() LIMIT 20', [], (err, rows) ->
+  pool.query 'SELECT * FROM samples WHERE predict_attack = 1 ORDER BY RAND() LIMIT 20', [], (err, rows) ->
     res.jsonp rows
+  return
+
+app.post '/samples', bodyParser(), (req, res, next) ->
+  reqbody = req.body
+  fields = (key for key of reqbody when key != 'id' and key != 'src_id')
+
+  query = 'UPDATE samples SET `id` = `id`'
+  params = []
+  for field in fields
+    query += ", `#{field}` = ? "
+    params.push reqbody[field] || null
+
+  query += ' WHERE src_id = ?'
+  params.push reqbody.src_id
+
+  pool.query query, params, (err) ->
+    (next err; return) if err?
+    res.jsonp req.body
+    return
   return
 
 app.use '/public', express.static(__dirname + '/public')
