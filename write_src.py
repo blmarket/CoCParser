@@ -1,5 +1,6 @@
 """
 writes src database.
+database schema should be defined. see schema.sql
 """
 import glob
 from itertools import chain
@@ -12,7 +13,7 @@ from flickr import fetch_images
 from StringIO import StringIO
 from skimage import io
 
-title = '20140501'
+title = '20140505'
 
 # L = chain.from_iterable(parse(filename) for filename in glob.glob('*.png'))
 L = chain.from_iterable(parse(filename) for filename in fetch_images(title))
@@ -30,14 +31,3 @@ for slit in L:
     con.commit()
 
 # con = sqlite3.connect('db.sqlite')
-
-"""
-database schema should be defined. otherwise possible loss of data due to invalid data type.
-
-CREATE TABLE src (
-  `id` int NOT NULL auto_increment,
-  `DATA` mediumblob,
-  `category` VARCHAR(128) DEFAULT NULL,
-  PRIMARY KEY(`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8; 
-"""
