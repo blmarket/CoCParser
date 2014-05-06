@@ -1,6 +1,7 @@
 """
 writes src database.
 database schema should be defined. see schema.sql
+TODO: change serializer to protobuf?
 """
 import glob
 from itertools import chain
