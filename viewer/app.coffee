@@ -45,26 +45,37 @@ app.get '/img/:id', (req, res, next) ->
   return
 
 app.get '/samples', (req, res) ->
-  pool.query 'SELECT `src`.`id` AS `src_id`, `attack`, `predict_attack`, `atkstars`, `predict_atkstars` FROM `src` LEFT JOIN `samples` ON `src`.`id` = `samples`.`src_id` ORDER BY predict_attack DESC, name LIMIT 200', [], (err, rows) ->
-    res.jsonp rows
+  pool.query(
+    '''
+    SELECT `src`.`id` AS `src_id`, `attack`, `predict_attack`, `atkstars`, `predict_atkstars` \
+    FROM `src` LEFT JOIN `samples` ON `src`.`id` = `samples`.`src_id` \
+    ORDER BY predict_attack DESC, name LIMIT 200'''
+    []
+    (err, rows) ->
+      res.jsonp rows
+      return
+  )
   return
 
 app.post '/samples', bodyParser(), (req, res, next) ->
   reqbody = req.body
   fields = (key for key of reqbody when key != 'id' and key != 'src_id')
 
-  query = 'UPDATE samples SET `id` = `id`'
-  params = []
-  for field in fields
-    query += ", `#{field}` = ? "
-    params.push reqbody[field] || null
-
-  query += ' WHERE src_id = ?'
-  params.push reqbody.src_id
-
-  pool.query query, params, (err) ->
+  pool.query 'INSERT IGNORE INTO samples (src_id) VALUES (?)', [ reqbody.src_id ], (err) ->
     (next err; return) if err?
-    res.jsonp req.body
+    query = 'UPDATE samples SET `id` = `id`'
+    params = []
+    for field in fields
+      query += ", `#{field}` = ? "
+      params.push reqbody[field] || null
+
+    query += ' WHERE src_id = ?'
+    params.push reqbody.src_id
+
+    pool.query query, params, (err) ->
+      (next err; return) if err?
+      res.jsonp req.body
+      return
     return
   return
 
