@@ -14,12 +14,14 @@ from flickr import fetch_images
 from StringIO import StringIO
 from skimage import io
 import blobs
+from config import *
 
 title = '20140505'
 
 L = chain.from_iterable(parse(filename) for filename in fetch_images(title))
 
-con = mdb.connect('blmarket.net', 'blmarket', 'tnfqkrtm', 'cocparser')
+con = mdb.connect(DB_HOSTNAME, DB_USERNAME, DB_PASSWORD, DB_DATABASE)
+
 for slit in L:
     png = StringIO()
     io.imsave(png, slit)
