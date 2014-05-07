@@ -25,8 +25,8 @@ html(ng-app='cocviewer')
           p.label(ng-repeat='label in labels')
             {{label}}
         section(ng-repeat='sample in samples')
-          p {{sample['sid']}}
-          p: img(src="/img/{{sample.sid}}")
+          p {{sample['src_id']}}
+          p: img(src="/img/{{sample.src_id}}")
           div.label(ng-repeat='label in labels')
             form(ng-submit='submit(sample)')
               input(name='val', type='text', ng-model='sample[label]')

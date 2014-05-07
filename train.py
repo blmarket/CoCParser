@@ -7,11 +7,14 @@ import MySQLdb as mdb
 from sklearn import svm
 from sklearn.ensemble import RandomForestClassifier as RF
 import numpy as np
+import json
 
-LABEL_NAME = 'atkstars'
+LABEL_NAME = 'attack'
 PREDICT_NAME = 'predict_' + LABEL_NAME
 
-con = mdb.connect('localhost', 'root', '', 'cocparser')
+config = json.load(open('config.json'))
+
+con = mdb.connect(config[u'host'], config[u'user'], config[u'password'], config[u'database'])
 
 df = pd.io.sql.read_frame('''
 SELECT `src`.`id`, `DATA`, `%s` 
