@@ -13,22 +13,21 @@ import sqlite3
 from flickr import fetch_images
 from StringIO import StringIO
 from skimage import io
+import blobs
 
 title = '20140505'
 
-# L = chain.from_iterable(parse(filename) for filename in glob.glob('*.png'))
 L = chain.from_iterable(parse(filename) for filename in fetch_images(title))
-# LL = (pickle.dumps(list(it.flatten())) for it in L)
 
-con = mdb.connect('localhost', 'root', '', 'cocparser')
+con = mdb.connect('blmarket.net', 'blmarket', 'tnfqkrtm', 'cocparser')
 for slit in L:
     png = StringIO()
     io.imsave(png, slit)
+    png_url = blobs.createBlob(title, png.getvalue())
+    print png_url
 
     row = pickle.dumps(list(slit.flatten()))
-    df = pd.DataFrame([ [ row, png.getvalue(), title ] ], columns = ['DATA', 'PNG', 'category'])
+    df = pd.DataFrame([ [ row, png.getvalue(), title, png_url ] ], columns = ['DATA', 'PNG', 'category', 'data_url'])
 
     pd.io.sql.write_frame(df, 'src', con, flavor = 'mysql', if_exists = 'append')
     con.commit()
-
-# con = sqlite3.connect('db.sqlite')

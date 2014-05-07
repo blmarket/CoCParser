@@ -18,8 +18,8 @@ import uuid
 conn = boto.connect_s3()
 bucket = conn.get_bucket('cocparser')
 
-def createBlob(png_chunk):
-    objectId = title + '/' + str(uuid.uuid4()) + '.png'
+def createBlob(category, png_chunk):
+    objectId = category + '/' + str(uuid.uuid4()) + '.png'
 
     k = Key(bucket)
     k.key = objectId
