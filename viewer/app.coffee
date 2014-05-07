@@ -11,11 +11,9 @@ morgan = require 'morgan'
 mysql = require 'mysql'
 bodyParser = require 'body-parser'
 
-pool = mysql.createPool {
-  host: 'localhost'
-  user: 'root'
-  database: 'cocparser'
-}
+config = require '../config.json'
+
+pool = mysql.createPool config
 
 app = express()
 
@@ -47,7 +45,7 @@ app.get '/img/:id', (req, res, next) ->
   return
 
 app.get '/samples', (req, res) ->
-  pool.query 'SELECT * FROM samples ORDER BY predict_attack DESC, name LIMIT 200', [], (err, rows) ->
+  pool.query 'SELECT `src`.`id` AS `sid`, `samples`.* FROM `src` LEFT JOIN `samples` ON `src`.`id` = `samples`.`src_id` ORDER BY predict_attack DESC, name LIMIT 200', [], (err, rows) ->
     res.jsonp rows
   return
 
