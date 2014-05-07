@@ -1,11 +1,11 @@
 CREATE TABLE `src` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `DATA` mediumblob,
-  `category` varchar(128) DEFAULT NULL,
-  `PNG` mediumblob,
-  PRIMARY KEY (`id`)
+      `id` int(11) NOT NULL AUTO_INCREMENT,
+      `DATA` mediumblob,
+      `category` varchar(128) DEFAULT NULL,
+      `PNG` mediumblob,
+      `data_url` varchar(512) DEFAULT NULL,
+      PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=155 DEFAULT CHARSET=utf8;
-
 
 CREATE TABLE `samples` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
