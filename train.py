@@ -9,7 +9,7 @@ from sklearn.ensemble import RandomForestClassifier as RF
 import numpy as np
 import json
 
-LABEL_NAME = 'atkstars'
+LABEL_NAME = 'attack'
 PREDICT_NAME = 'predict_' + LABEL_NAME
 
 config = json.load(open('config.json'))
@@ -17,10 +17,10 @@ config = json.load(open('config.json'))
 con = mdb.connect(config[u'host'], config[u'user'], config[u'password'], config[u'database'])
 
 df = pd.io.sql.read_frame('''
-SELECT `src`.`id`, `DATA`, `%s` 
+SELECT `src`.`id`, `DATA`, `samples`.`%s` 
 FROM `src` LEFT JOIN `samples` ON src.id = src_id 
-WHERE `%s` IS NOT NULL
-LIMIT 1000
+WHERE `%s` IS NOT NULL ORDER BY RAND()
+LIMIT 200
 ''' % (LABEL_NAME, LABEL_NAME), con)
 
 X = pd.DataFrame(list(df['DATA'].map(lambda x: np.array(pickle.loads(x), dtype=np.float64))))
@@ -32,7 +32,12 @@ print y
 rf = RF()
 rf.fit(X, y)
 
-test_set = pd.io.sql.read_frame('SELECT `id`, `DATA` FROM `src` LIMIT 1000', con)
+test_set = pd.io.sql.read_frame('''
+SELECT `src`.`id`, `DATA` 
+FROM `src` LEFT JOIN `samples` ON `src`.`id` = `samples`.`src_id`
+WHERE `samples`.`%s` IS NULL
+LIMIT 1000
+''' % (LABEL_NAME), con)
 
 for i in xrange(len(test_set)):
     src_id = test_set.loc[i, 'id']
