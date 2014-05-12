@@ -9,7 +9,7 @@ from sklearn.ensemble import RandomForestClassifier as RF
 import numpy as np
 import json
 
-LABEL_NAME = 'attack'
+LABEL_NAME = 'atkstars'
 PREDICT_NAME = 'predict_' + LABEL_NAME
 
 config = json.load(open('config.json'))

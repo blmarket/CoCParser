@@ -47,9 +47,9 @@ app.get '/img/:id', (req, res, next) ->
 app.get '/samples', (req, res) ->
   pool.query(
     '''
-    SELECT `src`.`id` AS `src_id`, `attack`, `predict_attack`, `atkstars`, `predict_atkstars` \
+    SELECT `src`.`id` AS `src_id`, `name`, `attack`, `predict_attack`, `atkstars`, `predict_atkstars` \
     FROM `src` LEFT JOIN `samples` ON `src`.`id` = `samples`.`src_id` \
-    ORDER BY predict_attack DESC, name LIMIT 200'''
+    ORDER BY predict_attack = 1 DESC, predict_attack DESC, name LIMIT 200'''
     []
     (err, rows) ->
       res.jsonp rows
