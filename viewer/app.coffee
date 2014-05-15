@@ -44,14 +44,18 @@ app.get '/img/:id', (req, res, next) ->
     return
   return
 
-app.get '/samples', (req, res) ->
+app.get '/samples', (req, res, next) ->
+  filter_query = req.param('filter') || '1'
   pool.query(
-    '''
-    SELECT `src`.`id` AS `src_id`, `name`, `attack`, `predict_attack`, `atkstars`, `predict_atkstars` \
+    """
+    SELECT `src`.`id` AS `src_id`, `category`, `name`, `attack`, `predict_attack`, `atkstars`, `predict_atkstars` \
     FROM `src` LEFT JOIN `samples` ON `src`.`id` = `samples`.`src_id` \
-    ORDER BY predict_attack = 1 DESC, predict_attack DESC, name LIMIT 200'''
+    WHERE #{filter_query} \
+    ORDER BY category DESC, predict_attack = 1 DESC, predict_attack DESC, name, predict_atkstars DESC LIMIT 200
+    """
     []
     (err, rows) ->
+      (next err; return) if err?
       res.jsonp rows
       return
   )

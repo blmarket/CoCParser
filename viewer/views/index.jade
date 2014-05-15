@@ -18,14 +18,18 @@ html(ng-app='cocviewer')
     div(ng-controller='SampleListingCtrl', ng-init='load()')
       div(ng-init="labels=['name', 'attack', 'predict_attack', 'atkstars', 'predict_atkstars']")
 
+      form(ng-submit='load()'): input(ng-model='filter')
+
       div.table
         section.title
           p ID
+          p Date
           p Image
           p.label(ng-repeat='label in labels')
             {{label}}
         section(ng-repeat='sample in samples')
           p {{sample['src_id']}}
+          p {{sample.category}}
           p: img(src="/img/{{sample.src_id}}")
           div.label(ng-repeat='label in labels')
             form(ng-submit='submit(sample)')
