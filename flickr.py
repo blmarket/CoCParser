@@ -28,6 +28,6 @@ def download_images(title):
         urlretrieve(url, "%d.png" % (i))
 
 if __name__ == "__main__":
-    download_images('20140501')
+    download_images('20140516')
     # for it in fetch_images('20140501'):
     #     print it
