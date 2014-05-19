@@ -16,7 +16,7 @@ from skimage import io
 import blobs
 import json
 
-title = '20140516'
+title = '20140518'
 
 L = chain.from_iterable(parse(filename) for filename in fetch_images(title))
 
@@ -31,7 +31,7 @@ for slit in L:
     print png_url
 
     row = pickle.dumps(list(slit.flatten()))
-    df = pd.DataFrame([ [ row, png.getvalue(), title, png_url ] ], columns = ['DATA', 'PNG', 'category', 'data_url'])
+    df = pd.DataFrame([ [ row, png.getvalue(), title, png_url, 1 ] ], columns = ['DATA', 'PNG', 'category', 'data_url', 'type'])
 
     pd.io.sql.write_frame(df, 'src', con, flavor = 'mysql', if_exists = 'append')
     con.commit()
