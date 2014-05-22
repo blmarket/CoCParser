@@ -63,17 +63,17 @@ app.get '/0/audit', (req, res, next) ->
   return
 
 samples_view = (req, res, next) ->
-  filter_query = req.param('filter') || '1'
   pool.query(
     """
-    SELECT `src`.`id` AS `src_id`, `category`, `name`, `attack`, `predict_attack`, `atkstars`, `predict_atkstars` \
+    SELECT `src`.`id` AS `src_id`, `category`, clan_place, name, attack1, attack2, total_stars \
     FROM `src` LEFT JOIN `samples` ON `src`.`id` = `samples`.`src_id` \
-    WHERE #{filter_query} \
-    ORDER BY category DESC, predict_attack = 1 DESC, predict_attack DESC, name, predict_atkstars DESC LIMIT 200
+    ORDER BY `category` DESC, clan_place ASC LIMIT 200
     """
     []
-    (err, rows) ->
+    (err, rows, fields) ->
+      console.log (f.name for f in fields)
       (next err; return) if err?
+      console.log rows
       res.jsonp rows
       return
   )

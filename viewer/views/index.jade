@@ -16,8 +16,6 @@ html(ng-app='cocviewer')
       .label form input { width: 80px; }
   body
     div(ng-controller='SampleListingCtrl', ng-init='load()')
-      div(ng-init="labels=['name', 'attack', 'predict_attack', 'atkstars', 'predict_atkstars']")
-
       form(ng-submit='load()'): input(ng-model='filter')
 
       div.table

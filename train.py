@@ -58,7 +58,7 @@ def putResult(df):
     print df
     pd.io.sql.write_frame(df, 'predict_result', con, flavor = 'mysql', if_exists='append')
 
-info = getOne(1)
+info = getOne(5)
 model = getTrain(info)
 putResult(getTest(model, info))
 
