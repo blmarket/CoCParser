@@ -16,8 +16,6 @@ config = json.load(open('config.json'))
 
 con = mdb.connect(config[u'host'], config[u'user'], config[u'password'], config[u'database'])
 
-LABEL_NAME = 'attack1'
-
 def getOne(pid):
     cur = con.cursor()
     cur.execute("SELECT id, type, field_name FROM `predictions` WHERE `id` = '%s' LIMIT 1" % (pid))
@@ -31,7 +29,6 @@ def getTrain(label):
         SELECT `src_id`, `DATA`, `value` 
         FROM `src` LEFT JOIN `tags` ON `src`.`id` = `tags`.`src_id`
         WHERE `name` = '%s' AND `probability` IS NULL
-        ORDER BY RAND() LIMIT 30
         ''' % (label), con
     )
     print "REad data complete"
@@ -59,14 +56,16 @@ def getPrediction(model, label):
     df['name'] = label
     df['value'] = result
     df['probability'] = 0.5
-    return df.drop(['DATA', label], axis=1)
+    return df.drop(['DATA'], axis=1)
 
 def putResult(df):
-    print df
     pd.io.sql.write_frame(df, 'tags', con, flavor = 'mysql', if_exists='append')
 
-model = getTrain(LABEL_NAME)
-putResult(getPrediction(model, LABEL_NAME))
+for label_name in [ 'clan_place', 'name', 'attack2', 'total_stars' ]:
+    model = getTrain(label_name)
+    prediction = getPrediction(model, label_name)
+    print prediction
+    putResult(prediction)
 
 # print getTrain(getOne(1))
 # getOne(2)
