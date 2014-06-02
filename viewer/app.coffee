@@ -84,7 +84,7 @@ app.get '/0/samples', samples_view
 
 update_sample = [ bodyParser(), (req, res, next) ->
   reqbody = req.body
-  fields = (key for key of reqbody when key != 'id' and key != 'src_id' and key != 'category')
+  fields = (key for key of reqbody when key != 'id' and key != 'src_id' and key != 'category' and key != 'predict_result')
 
   pool.query 'INSERT IGNORE INTO samples (src_id) VALUES (?)', [ reqbody.src_id ], (err) ->
     (next err; return) if err?

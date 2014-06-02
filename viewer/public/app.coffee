@@ -22,11 +22,12 @@ SampleListingCtrl = ($scope, $resource) ->
 CCBSummaryCtrl = ($scope, $resource) ->
   $scope.samples = []
   $scope.labels = []
+  $scope.pid = 1
 
   Samples = $resource '/db/get/:id', { pid: null }
 
   $scope.load = ->
-    $scope.samples = Samples.query { pid: 2 }, ->
+    $scope.samples = Samples.query { pid: $scope.pid }, ->
       $scope.labels = (it for it of $scope.samples[0] when it[0] != '$' and it != 'src_id')
       return
     return

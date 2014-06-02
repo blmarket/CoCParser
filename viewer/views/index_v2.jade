@@ -16,6 +16,8 @@ html(ng-app='cocviewer')
       .label form input { width: 80px; }
   body
     div(ng-controller='CCBSummaryCtrl', ng-init='load()')
+      form(ng-submit='load()') 
+        input(ng-model='pid')
       div.table
         section.title
           p ID
@@ -27,4 +29,5 @@ html(ng-app='cocviewer')
           p: img(src="/img/{{sample.src_id}}")
           div.label(ng-repeat='label in labels')
             form(ng-submit='submit(sample)')
-              input(name='val', type='text', ng-model='sample[label]')
+              input(name='val', type='text', ng-model='sample[label]', ng-if='label!="predict_result"')
+              input(name='val', type='text', ng-model='sample[label]', disabled, ng-if='label=="predict_result"')

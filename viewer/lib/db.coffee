@@ -27,10 +27,12 @@ getByPid = (pid, cb) ->
     (cb err; return) if err?
     {type, field_name} = res
     pool.query("""
-    SELECT `src`.`id` AS `src_id`, `samples`.?? \
+    SELECT `src`.`id` AS `src_id`, `samples`.??, `p`.`predict_result` \
     FROM `src` LEFT JOIN `samples` ON `src`.`id` = `samples`.`src_id` \
+      LEFT JOIN (SELECT `src_id`, `predict_result` FROM `predict_result` WHERE `pid` = ?) AS `p` 
+        ON `src`.`id` = `p`.`src_id` \
     WHERE `src`.`type` = ? 
-    """, [field_name, type], (err, rows) -> cb err, rows
+    """, [field_name, pid, type], (err, rows) -> cb err, rows
     )
     return
   return
