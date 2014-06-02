@@ -16,7 +16,7 @@ from skimage import io
 import blobs
 import json
 
-title = '20140521'
+title = '20140530'
 
 L = chain.from_iterable(parse(filename) for filename in fetch_images(title))
 

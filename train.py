@@ -2,6 +2,7 @@
 Train and create prediction.
 FIXME: duplicate code with train.py
 """
+import sys
 import pickle
 import pandas as pd
 import MySQLdb as mdb
@@ -15,6 +16,8 @@ config = json.load(open('config.json'))
 
 con = mdb.connect(config[u'host'], config[u'user'], config[u'password'], config[u'database'])
 
+LABEL_NAME = 'attack1'
+
 def getOne(pid):
     cur = con.cursor()
     cur.execute("SELECT id, type, field_name FROM `predictions` WHERE `id` = '%s' LIMIT 1" % (pid))
@@ -22,45 +25,48 @@ def getOne(pid):
     cur.close()
     return row
 
-def getTrain(info):
-    label = info[2]
+def getTrain(label):
     df = pd.io.sql.read_frame(
         '''
-        SELECT `src_id`, DATA, `%s` 
-        FROM `src` LEFT JOIN `samples` ON `src`.`id` = `samples`.`src_id`
-        WHERE `%s` IS NOT NULL ORDER BY RAND() LIMIT 100
-        ''' % (label, label), con
+        SELECT `src_id`, `DATA`, `value` 
+        FROM `src` LEFT JOIN `tags` ON `src`.`id` = `tags`.`src_id`
+        WHERE `name` = '%s' AND `probability` IS NULL
+        ORDER BY RAND() LIMIT 30
+        ''' % (label), con
     )
+    print "REad data complete"
     X = pd.DataFrame(list(df['DATA'].map(lambda x: np.array(pickle.loads(x), dtype=np.float64))))
-    y = df[label]
+    y = df['value']
 
-    rf = RF()
-    rf.fit(X, y)
+    rf = RF(n_jobs = 3)
+    rf.fit(X, y) # 3 is good for usual multicore system
+    print "Fit complete"
     return rf
 
-def getTest(model, info):
-    label = info[2]
+def getPrediction(model, label):
     df = pd.io.sql.read_frame(
         '''
-        SELECT `src`.`id` AS `src_id`, DATA, `%s` 
-        FROM `src` LEFT JOIN `samples` ON `src`.`id` = `samples`.`src_id`
-        WHERE src.type = 1 AND `%s` IS NULL LIMIT 1000
-        ''' % (label, label), con
+        SELECT `id` AS `src_id`, DATA FROM `src`
+        WHERE `type` = '1' AND `id` NOT IN (
+            SELECT src_id FROM tags WHERE `name` = '%s'
+        ) LIMIT 1000
+        ''' % (label), con
     )
 
     X = pd.DataFrame(list(df['DATA'].map(lambda x: np.array(pickle.loads(x), dtype=np.float64))))
     result = model.predict(X)
-    df['predict_result'] = result
-    df['pid'] = info[0]
+
+    df['name'] = label
+    df['value'] = result
+    df['probability'] = 0.5
     return df.drop(['DATA', label], axis=1)
 
 def putResult(df):
     print df
-    pd.io.sql.write_frame(df, 'predict_result', con, flavor = 'mysql', if_exists='append')
+    pd.io.sql.write_frame(df, 'tags', con, flavor = 'mysql', if_exists='append')
 
-info = getOne(5)
-model = getTrain(info)
-putResult(getTest(model, info))
+model = getTrain(LABEL_NAME)
+putResult(getPrediction(model, LABEL_NAME))
 
 # print getTrain(getOne(1))
 # getOne(2)
