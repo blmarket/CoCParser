@@ -24,10 +24,6 @@ list = (filter, cb) ->
   )
   return
 
-# list [ 'clan_place' ], (err, res) -> console.log res
-# list [ 'clan_place', 'attack1' ], (err, res) -> console.log res
-# list null, (err, res) -> console.log res
-
 listMiddleware = (req, res, next) ->
   filter = req.param('filter') || null
   filter = filter.split ',' if filter?
@@ -53,4 +49,5 @@ app = express()
 app.get '/', listMiddleware
 app.post '/:id', postMiddleware
 
-module.exports = app
+module.exports.list = list
+module.exports.app = app

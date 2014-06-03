@@ -24,7 +24,7 @@ app.use (req, res, next) ->
 app.use '/public', express.static(__dirname + '/public')
 
 # TAGS api
-app.use '/tags', tags_app
+app.use '/tags', tags_app.app
 app.get '/', (req, res) ->
   res.render 'tags_viewer.jade'
   return
