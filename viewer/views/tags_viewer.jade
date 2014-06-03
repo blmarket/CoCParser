@@ -12,5 +12,7 @@ html(ng-app='cocviewer')
     div(ng-controller='TagsViewerCtrl', ng-init='load()')
       div(ng-repeat='sample in samples')
         img(src='{{sample.image_url}}')
-        p(ng-repeat='tag in sample.tags')
-          {{ tag.name }} = {{ tag.value }}
+        div(ng-repeat='tag in sample.tags')
+          form(ng-submit='submit(tag)')
+            label(for='{{tag.name}}') {{ tag.name }}
+            input(id='{{tag.name}}', name='{{tag.name}}', type='text', ng-model='tag.value')

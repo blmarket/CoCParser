@@ -6,7 +6,11 @@ TagsViewerCtrl = ($scope, $resource) ->
   $scope.samples = []
 
   $scope.load = ->
-    $scope.samples = Samples.query()
+    $scope.samples = Samples.query { filter: '' }
+    return
+
+  $scope.submit = (tag) ->
+    Samples.save( { id: tag.id }, tag)
     return
   return
 
