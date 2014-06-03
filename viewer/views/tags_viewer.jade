@@ -1,0 +1,16 @@
+doctype html
+html(ng-app='cocviewer')
+  head
+    title hello world
+    script(src='//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js')
+    script(src='//ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.min.js')
+    script(src='//ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular-resource.min.js')
+    script(src='/public/app.js')
+
+    link(href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css", rel="stylesheet")
+  body
+    div(ng-controller='TagsViewerCtrl', ng-init='load()')
+      div(ng-repeat='sample in samples')
+        img(src='{{sample.image_url}}')
+        p(ng-repeat='tag in sample.tags')
+          {{ tag.name }} = {{ tag.value }}

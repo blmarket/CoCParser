@@ -22,6 +22,11 @@ app.use (req, res, next) ->
   return
 
 app.use '/public', express.static(__dirname + '/public')
-app.use '/', tags_app
+
+# TAGS api
+app.use '/tags', tags_app
+app.get '/', (req, res) ->
+  res.render 'tags_viewer.jade'
+  return
 
 http.createServer(app).listen(3000)

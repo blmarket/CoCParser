@@ -1,5 +1,15 @@
 angular.module 'cocviewer', [ 'ngResource' ]
 
+TagsViewerCtrl = ($scope, $resource) ->
+  Samples = $resource '/tags/:id'
+
+  $scope.samples = []
+
+  $scope.load = ->
+    $scope.samples = Samples.query()
+    return
+  return
+
 SampleListingCtrl = ($scope, $resource) ->
   $scope.samples = []
   $scope.labels = []
