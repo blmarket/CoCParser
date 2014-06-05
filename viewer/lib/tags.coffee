@@ -7,11 +7,17 @@ config = require '../../config.json'
 
 pool = mysql.createPool config
 
-list = (filter, cb) ->
+list = (date, filter, cb) ->
   query = "SELECT tags.id, data_url, src_id, name, value, probability FROM src LEFT JOIN tags ON src.id = src_id WHERE type=1"
+  query += " AND category = ?" if date?
   query += " AND probability IS NOT NULL" if filter?
   query += " AND name IN (?)" if filter?
-  pool.query(query, [filter]
+
+  params = []
+  params.push date if date?
+  params.push filter if filter?
+
+  pool.query(query, params
     (err, data) ->
       obj = _.groupBy(data, (v) -> v.src_id)
       ret = _.sortBy (for k, v of obj
@@ -27,7 +33,7 @@ list = (filter, cb) ->
 listMiddleware = (req, res, next) ->
   filter = req.param('filter') || null
   filter = filter.split ',' if filter?
-  list filter, (err, data) ->
+  list null, filter, (err, data) ->
     (next err; return) if err?
     res.jsonp data
     return
