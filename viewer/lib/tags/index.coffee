@@ -1,11 +1,9 @@
 _ = require 'underscore'
-mysql = require 'mysql'
 express = require 'express'
 bodyParser = require 'body-parser'
 
-config = require '../../config.json'
-
-pool = mysql.createPool config
+{pool, aggregate} = require './common'
+{searchMiddleware} = require './search'
 
 list = (date, filter, cb) ->
   query = "SELECT tags.id, data_url, src_id, name, value, probability FROM src LEFT JOIN tags ON src.id = src_id WHERE type=1"
@@ -19,13 +17,7 @@ list = (date, filter, cb) ->
 
   pool.query(query, params
     (err, data) ->
-      obj = _.groupBy(data, (v) -> v.src_id)
-      ret = _.sortBy (for k, v of obj
-        image_url = v[0].data_url
-        tags = (_.omit(vv, 'data_url', 'src_id') for vv in v)
-        id: k, image_url: image_url, tags: tags
-      ), (v) -> v.tags[0].value
-
+      ret = _.sortBy aggregate(data), (v) -> v.tags[0].value
       cb null, ret
   )
   return
@@ -54,6 +46,7 @@ postMiddleware = [ bodyParser(), (req, res, next) ->
 app = express()
 app.get '/', listMiddleware
 app.post '/:id', postMiddleware
+app.get '/search/:name', searchMiddleware
 
 module.exports.list = list
 module.exports.app = app
