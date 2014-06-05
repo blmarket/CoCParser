@@ -13,7 +13,7 @@ search = (name, cb) ->
   pool.query query, [ name ], (err, rows) ->
     (cb err; return) if err?
     ret = _.sortBy aggregate(rows), (v) -> v.id
-    console.log JSON.stringify(ret, 0, 2)
+    cb null, ret
     return
   return
 
