@@ -1,9 +1,9 @@
-do ->
-  fs = require 'fs'
-  CS = require 'coffee-script'
-  data = fs.readFileSync(__dirname + '/public/app.coffee').toString()
-  fs.writeFileSync(__dirname + '/public/app.js', CS.compile data, { bare: true })
-  return
+# do ->
+#   fs = require 'fs'
+#   CS = require 'coffee-script'
+#   data = fs.readFileSync(__dirname + '/public/app.coffee').toString()
+#   fs.writeFileSync(__dirname + '/public/app.js', CS.compile data, { bare: true })
+#   return
 
 _ = require 'underscore'
 http = require 'http'

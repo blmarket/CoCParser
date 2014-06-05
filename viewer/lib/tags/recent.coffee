@@ -4,7 +4,7 @@ _ = require 'underscore'
 
 recent = (cb) ->
   query = """
-  SELECT src_id, data_url, name, value \
+  SELECT src_id, category, data_url, name, value \
   FROM src LEFT JOIN tags ON src.id = src_id \
   WHERE src.type = '1' AND \
   src.category IN (SELECT MAX(category) FROM src) AND \
