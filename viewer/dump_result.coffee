@@ -8,7 +8,7 @@ config = require '../config.json'
 
 pool = mysql.createPool config
 
-list '20140602', null, (err, res) ->
+list '20140605', null, (err, res) ->
   params = (for it in res
     kv = { url: it.image_url }
     for t in it.tags
@@ -18,5 +18,6 @@ list '20140602', null, (err, res) ->
   pool.query "INSERT INTO samples (url, clan_place, name, attack1, attack2, total_stars) VALUES ?", [params], (err, res) ->
     console.log err
     console.log res
+    process.exit 0
     return
   return
