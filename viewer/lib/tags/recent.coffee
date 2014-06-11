@@ -7,7 +7,10 @@ recent = (cb) ->
   SELECT src_id, category, data_url, name, value \
   FROM src LEFT JOIN tags ON src.id = src_id \
   WHERE src.type = '1' AND \
-  src.category IN (SELECT MAX(category) FROM src) AND \
+  src.category IN ( \
+    SELECT MAX(category) FROM src RIGHT JOIN tags ON src.id = src_id \
+    WHERE `probability` IS NULL
+  ) AND \
   `probability` IS NULL
   """
 
@@ -23,6 +26,7 @@ recent = (cb) ->
 recentMiddleware = (req, res, next) ->
   recent (err, data) ->
     (next err; return) if err?
+    console.log data
     res.jsonp data
     return
   return
