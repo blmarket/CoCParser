@@ -16,7 +16,7 @@ import json
 
 config = json.load(open('config.json'))
 
-con = mdb.connect(config[u'host'], config[u'user'], config[u'password'], config[u'database'])
+con = mdb.connect(config[u'host'], config[u'user'], config[u'password'], config[u'database'], use_unicode = True, charset = 'utf8')
 
 def getOne(pid):
     cur = con.cursor()
@@ -33,6 +33,7 @@ def getTrain(label):
         WHERE `name` = '%s' AND `probability` IS NULL
         ''' % (label), con
     )
+    print df
     print "REad data complete"
     X = pd.DataFrame(list(df['DATA'].map(lambda x: np.array(pickle.loads(x), dtype=np.float64))))
     y = df['value']
@@ -63,7 +64,7 @@ def getPrediction(model, label):
 def putResult(df):
     pd.io.sql.write_frame(df, 'tags', con, flavor = 'mysql', if_exists='append')
 
-for label_name in [ 'clan_place', 'name', 'attack1', 'attack2', 'total_stars' ]:
+for label_name in [ 'name' ]:
     model = getTrain(label_name)
     prediction = getPrediction(model, label_name)
     print prediction

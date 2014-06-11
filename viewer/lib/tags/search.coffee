@@ -17,7 +17,7 @@ search = (name, cb) ->
     return
   return
 
-search 'shashagaga', -> console.log arguments
+# search 'shashagaga', -> console.log arguments
 
 searchMiddleware = (req, res, next) ->
   name = req.param 'name'
