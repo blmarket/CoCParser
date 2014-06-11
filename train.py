@@ -64,7 +64,7 @@ def getPrediction(model, label):
 def putResult(df):
     pd.io.sql.write_frame(df, 'tags', con, flavor = 'mysql', if_exists='append')
 
-for label_name in [ 'name' ]:
+for label_name in [ 'clan_place', 'name', 'attack1', 'attack2', 'total_stars' ]:
     model = getTrain(label_name)
     prediction = getPrediction(model, label_name)
     print prediction
