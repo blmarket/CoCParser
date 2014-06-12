@@ -9,7 +9,7 @@ bodyParser = require 'body-parser'
 list = (date, filter, cb) ->
   query = "SELECT tags.id, data_url, src_id, name, value, probability FROM src LEFT JOIN tags ON src.id = src_id WHERE type=1"
   query += " AND category = ?" if date?
-  query += " AND probability IS NOT NULL" if filter?
+  query += " AND probability IS NOT NULL"
   query += " AND name IN (?)" if filter?
 
   params = []

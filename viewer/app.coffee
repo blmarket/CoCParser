@@ -34,4 +34,5 @@ app.get '/', (req, res) ->
   res.render 'war_index.jade'
   return
 
-http.createServer(app).listen(3000)
+port = process.env.PORT || 3000
+http.createServer(app).listen(port)
