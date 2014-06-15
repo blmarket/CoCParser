@@ -10,9 +10,8 @@ html(ng-app='cocviewer')
     link(href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css", rel="stylesheet")
   body
     div(ng-controller='TagsViewerCtrl', ng-init='load()')
-      div(ng-repeat='sample in samples')
-        img(src='{{sample.image_url}}')
-        div(ng-repeat='tag in sample.tags')
-          form(ng-submit='submit(tag)')
-            label(for='{{tag.name}}') {{ tag.name }}
-            input(id='{{tag.name}}', name='{{tag.name}}', type='text', ng-model='tag.value')
+      div(ng-repeat='tag in samples')
+        img(src='{{tag.data_url}}')
+        form(ng-submit='submit(tag)')
+          label(for='{{tag.name}}') {{ tag.name }}
+          input(id='{{tag.name}}', name='{{tag.name}}', type='text', ng-model='tag.value')

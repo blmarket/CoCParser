@@ -16,12 +16,7 @@ list = (date, filter, cb) ->
   params.push date if date?
   params.push filter if filter?
 
-  pool.query(query, params
-    (err, data) ->
-      throw err if err?
-      ret = _.sortBy aggregate(data), (v) -> v.tags[0].value
-      cb null, ret
-  )
+  pool.query query, params, cb
   return
 
 listMiddleware = (req, res, next) ->
