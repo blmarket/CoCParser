@@ -18,6 +18,7 @@ import json
 
 title = '20140614'
 
+# L = chain.from_iterable(parse(filename) for filename in [ '0.png' ])
 L = chain.from_iterable(parse(filename) for filename in fetch_images(title))
 
 config = json.load(open('config.json'))
