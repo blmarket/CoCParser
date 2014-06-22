@@ -18,13 +18,6 @@ config = json.load(open('config.json'))
 
 con = mdb.connect(config[u'host'], config[u'user'], config[u'password'], config[u'database'], use_unicode = True, charset = 'utf8')
 
-def getOne(pid):
-    cur = con.cursor()
-    cur.execute("SELECT id, type, field_name FROM `predictions` WHERE `id` = '%s' LIMIT 1" % (pid))
-    row = cur.fetchone()
-    cur.close()
-    return row
-
 def getTrain(label):
     df = pd.io.sql.read_frame(
         '''
@@ -69,9 +62,3 @@ for label_name in [ 'clan_place', 'name', 'attack1', 'attack2', 'total_stars' ]:
     prediction = getPrediction(model, label_name)
     print prediction
     putResult(prediction)
-
-# print getTrain(getOne(1))
-# getOne(2)
-# getOne(3)
-# getOne(4)
-# getOne(5)
