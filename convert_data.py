@@ -22,7 +22,8 @@ engine = sa.create_engine(conn_str, encoding = 'utf8')
 
 while True:
     conn = engine.connect()
-    rp = conn.execute('SELECT id, data FROM src WHERE id NOT IN (SELECT src_id FROM new_src_data) LIMIT 5')
+    conn.execution_options(stream_results = True)
+    rp = conn.execute('SELECT id, data FROM src WHERE id NOT IN (SELECT src_id FROM new_src_data) LIMIT 15')
 
     for it in rp:
         fp = StringIO()
