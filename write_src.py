@@ -10,6 +10,7 @@ import pandas as pd
 import pickle
 import MySQLdb as mdb
 import sqlite3
+import numpy as np
 from flickr import fetch_images
 from StringIO import StringIO
 from skimage import io
@@ -29,10 +30,12 @@ for slit in L:
     png = StringIO()
     io.imsave(png, slit)
     png_url = blobs.createBlob(title, png.getvalue())
-    print png_url
+    print png_url, type(slit)
 
-    row = pickle.dumps(list(slit.flatten()))
-    df = pd.DataFrame([ [ row, png.getvalue(), title, png_url, 1 ] ], columns = ['DATA', 'PNG', 'category', 'data_url', 'type'])
+    data_fp = StringIO()
+    np.save(data_fp, np.array(list(slit.flatten())))
+
+    df = pd.DataFrame([ [ data_fp.getvalue(), png.getvalue(), title, png_url, 1 ] ], columns = ['DATA', 'PNG', 'category', 'data_url', 'type'])
 
     pd.io.sql.write_frame(df, 'src', con, flavor = 'mysql', if_exists = 'append')
     con.commit()
