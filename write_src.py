@@ -25,7 +25,7 @@ if not config:
     exit(-1)
 
 conn_str = "mysql://%s:%s@%s/%s" % (config[u'user'], config[u'password'], config['host'], config['database'])
-engine = sa.create_engine(conn_str, encoding = 'utf8')
+engine = create_engine(conn_str, encoding = 'utf8')
 
 def write_src(L, title):
     for slit in L:
