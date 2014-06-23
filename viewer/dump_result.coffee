@@ -1,7 +1,6 @@
 _ = require 'underscore'
 mysql = require 'mysql'
 express = require 'express'
-bodyParser = require 'body-parser'
 
 {list} = require './lib/tags'
 config = require '../config.json'
