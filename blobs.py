@@ -4,7 +4,6 @@ Creates web-public image url for given image blob.
 from itertools import chain
 from parse import parse
 import pickle
-import MySQLdb as mdb
 import sqlite3
 from flickr import fetch_images
 from StringIO import StringIO
