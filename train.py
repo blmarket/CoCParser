@@ -70,7 +70,7 @@ def getPrediction(model, label):
     return df.drop(['DATA'], axis=1)
 
 def putResult(df):
-    pd.io.sql.write_frame(df, 'tags', engine, flavor = 'mysql', if_exists='append')
+    pd.io.sql.to_sql(df, 'tags', engine, if_exists='append')
 
 for label_name in [ 'clan_place', 'name', 'attack1', 'attack2', 'total_stars' ]:
     model = getTrain(label_name)
