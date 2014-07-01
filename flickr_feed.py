@@ -19,19 +19,18 @@ def photoUrl(photo_id):
             dic['farm'], dic['server'], dic['id'], dic['originalsecret'])
     return url
 
-    while True:
-        if r.llen('flickr') == 0:
-            print 'Empty queue!'
-            time.sleep(1)
-            continue
-        obj = json.loads(r.lpop('flickr'))
-        try:
-            for it in obj[u'items']:
-                photo_id = it[u'id'].split('/')[-1]
-                title = it[u'title']
-                url = photoUrl(photo_id)
-                write_src(parse(url), title)
-        except Exception as e:
-            print obj
-            raise e
+while True:
+    if r.llen('flickr') == 0:
+        print 'Empty queue!'
+        exit(0)
+    obj = json.loads(r.lpop('flickr'))
+    try:
+        for it in obj[u'items']:
+            photo_id = it[u'id'].split('/')[-1]
+            title = it[u'title']
+            url = photoUrl(photo_id)
+            write_src(parse(url), title)
+    except Exception as e:
+        print obj
+        raise e
 
