@@ -1,3 +1,4 @@
+import sys
 from skimage import data, io, filter
 import numpy as np
 
@@ -24,5 +25,7 @@ def parse(filename):
         # , ff[i].choose(set([True]))
 
 if __name__ == "__main__":
-    for row in parse('0.png'):
+    if len(sys.argv) == 1:
+        sys.exit(-1)
+    for row in parse(sys.argv[-1]):
         print row
