@@ -29,7 +29,7 @@ TagsViewerCtrl = ($scope, $resource) ->
         if a.name != b.name
           return if (a.name < b.name) then 1 else -1
         if a.value != b.value
-          return if (a.value < b.value) then 1 else -1
+          return if (a.value > b.value) then 1 else -1
         return 0
       console.log $scope.samples
       return
