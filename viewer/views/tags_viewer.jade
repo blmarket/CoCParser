@@ -2,6 +2,7 @@ extends layout
 
 block contents
   div(ng-controller='TagsViewerCtrl', ng-init='load()')
+    input(type='button', value='Audit-all', ng-click='audit_all()')
     div(ng-repeat='tag in samples')
       img(src='{{tag.data_url}}')
       form(ng-submit='submit(tag)')
