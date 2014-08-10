@@ -27,7 +27,7 @@ TagsViewerCtrl = ($scope, $resource) ->
     $scope.samples = Samples.query { filter: '' }, (data) ->
       $scope.samples = data.sort (a, b) ->
         if a.name != b.name
-          return if (a.name < b.name) then 1 else -1
+          return if (a.name > b.name) then 1 else -1
         if a.value != b.value
           return if (a.value > b.value) then 1 else -1
         return 0
@@ -38,6 +38,12 @@ TagsViewerCtrl = ($scope, $resource) ->
   $scope.submit = (tag) ->
     Samples.save( { id: tag.id }, tag)
     return
+
+  $scope.audit_all = ->
+    for tag in $scope.samples
+      Samples.save( { id: tag.id }, tag)
+    return
+
   return
 
 SampleListingCtrl = ($scope, $resource) ->
