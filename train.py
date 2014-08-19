@@ -33,6 +33,7 @@ def getTrain(label):
         SELECT `src_id`, `DATA`, `value` 
         FROM `src` LEFT JOIN `tags` ON `src`.`id` = `tags`.`src_id`
         WHERE `name` = '%s' AND `probability` IS NULL
+        ORDER BY `src`.`id` DESC LIMIT 800
         ''' % (label), engine
     )
     print df
