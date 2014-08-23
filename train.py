@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """
 Train and create prediction.
-FIXME: duplicate code with train.py
 """
 from sys import exit
 from StringIO import StringIO
