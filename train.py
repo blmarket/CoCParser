@@ -56,27 +56,26 @@ def getPrediction(model, label):
         ) LIMIT 1000
         ''' % (label), engine
     )
-    
-    print len(df)
 
     if len(df) == 0:
         return None
 
     X = pd.DataFrame(list(df['DATA'].map(lambda x: np.load(StringIO(x)))))
     result = model.predict(X)
+    probs = model.predict_proba(X)
 
     df['name'] = label
     df['value'] = result
-    df['probability'] = 0.5
+    df['probability'] = map(max, probs)
     return df.drop(['DATA'], axis=1)
 
 def putResult(df):
     pd.io.sql.to_sql(df, 'tags', engine, if_exists='append')
 
 for label_name in [ 'clan_place', 'name', 'attack1', 'attack2', 'total_stars' ]:
+    print label_name
     model = getTrain(label_name)
     prediction = getPrediction(model, label_name)
     if prediction is None:
         continue
-    print prediction
     putResult(prediction)
