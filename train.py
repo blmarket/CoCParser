@@ -20,16 +20,13 @@ engine = engine.get_engine()
 def getTrain(label):
     df = pd.io.sql.read_sql_query(
         '''
-        SELECT `src_id`, `DATA`, `value` 
-        FROM `src` LEFT JOIN `tags` ON `src`.`id` = `tags`.`src_id`
+        SELECT `src_id`, `value` FROM `tags`
         WHERE `name` = '%s' AND `probability` IS NULL
-        ORDER BY `src`.`id` DESC LIMIT 800
+        ORDER BY `src_id` DESC LIMIT 800
         ''' % (label), engine
     )
-    print df
-    print "REad data complete"
 
-    X = pd.DataFrame(list(df['DATA'].map(lambda x: np.load(StringIO(x)))))
+    X = df['src_id'].map(lambda x: np.load(StringIO(db_mysql.cache_mysql(x))))
     y = df['value']
 
     rf = RF(n_jobs = 3)
@@ -62,10 +59,11 @@ def getPrediction(model, label):
 def putResult(df):
     pd.io.sql.to_sql(df, 'tags', engine, if_exists='append')
 
-for label_name in [ 'clan_place', 'name', 'attack1', 'attack2', 'total_stars' ]:
-    print label_name
-    model = getTrain(label_name)
-    prediction = getPrediction(model, label_name)
-    if prediction is None:
-        continue
-    putResult(prediction)
+if __name__ == "__main__":
+    for label_name in [ 'clan_place', 'name', 'attack1', 'attack2', 'total_stars' ]:
+        print label_name
+        model = getTrain(label_name)
+        prediction = getPrediction(model, label_name)
+        if prediction is None:
+            continue
+        putResult(prediction)
