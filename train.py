@@ -8,7 +8,6 @@ from StringIO import StringIO
 import sqlalchemy as sa
 import pickle
 import pandas as pd
-import MySQLdb as mdb
 from sklearn import svm
 from sklearn.ensemble import RandomForestClassifier as RF
 from skimage import io
@@ -27,7 +26,7 @@ conn_str = "mysql://%s:%s@%s/%s" % (config[u'user'], config[u'password'], config
 engine = sa.create_engine(conn_str, encoding = 'utf8')
 
 def getTrain(label):
-    df = pd.io.sql.read_sql(
+    df = pd.io.sql.read_sql_query(
         '''
         SELECT `src_id`, `DATA`, `value` 
         FROM `src` LEFT JOIN `tags` ON `src`.`id` = `tags`.`src_id`
@@ -47,7 +46,7 @@ def getTrain(label):
     return rf
 
 def getPrediction(model, label):
-    df = pd.io.sql.read_sql(
+    df = pd.io.sql.read_sql_query(
         '''
         SELECT `id` AS `src_id`, DATA FROM `src`
         WHERE `type` = '1' AND `id` NOT IN (
