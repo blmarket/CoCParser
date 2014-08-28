@@ -14,6 +14,7 @@ from skimage import io
 import numpy as np
 import json
 import engine
+import db_mysql
 
 engine = engine.get_engine()
 
@@ -26,7 +27,7 @@ def getTrain(label):
         ''' % (label), engine
     )
 
-    X = df['src_id'].map(lambda x: np.load(StringIO(db_mysql.cache_mysql(x))))
+    X = pd.DataFrame(list(df['src_id'].map(lambda x: np.load(StringIO(db_mysql.cache_mysql(x))))))
     y = df['value']
 
     rf = RF(n_jobs = 3)
@@ -41,7 +42,7 @@ def getPrediction(model, label):
         WHERE `type` = '1' AND `id` NOT IN (
             SELECT src_id FROM tags WHERE `name` = '%s'
         ) LIMIT 1000
-        ''' % (label), engine
+        ''' % (label), engine, index_col = 'src_id'
     )
 
     if len(df) == 0:
