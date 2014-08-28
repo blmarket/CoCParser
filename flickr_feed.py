@@ -23,7 +23,7 @@ while True:
     if r.llen('flickr') == 0:
         print 'Empty queue!'
         exit(0)
-    obj = json.loads(r.lpop('flickr'))
+    obj = json.loads(r.rpop('flickr'))
     try:
         for it in obj[u'items']:
             photo_id = it[u'id'].split('/')[-1]
