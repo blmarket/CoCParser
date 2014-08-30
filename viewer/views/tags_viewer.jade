@@ -8,3 +8,4 @@ block contents
       form(ng-submit='submit(tag)')
         label(for='{{tag.name}}') {{ tag.name }}
         input(id='{{tag.name}}', name='{{tag.name}}', type='text', ng-model='tag.value')
+        span(style='margin-left: 20px;') probability {{ tag.probability }}
