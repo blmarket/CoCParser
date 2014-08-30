@@ -1,10 +1,3 @@
-# do ->
-#   fs = require 'fs'
-#   CS = require 'coffee-script'
-#   data = fs.readFileSync(__dirname + '/public/app.coffee').toString()
-#   fs.writeFileSync(__dirname + '/public/app.js', CS.compile data, { bare: true })
-#   return
-
 _ = require 'underscore'
 http = require 'http'
 express = require 'express'
@@ -22,8 +15,6 @@ app.use (req, res, next) ->
   next()
   return
 
-app.use '/public', express.static(__dirname + '/public')
-
 # TAGS api
 app.use '/tags', tags_app.app
 
@@ -31,9 +22,7 @@ app.get '/check', (req, res) ->
   res.render 'tags_viewer.jade'
   return
 
-app.get '/', (req, res) ->
-  res.render 'war_index.jade'
-  return
+app.use '/', express.static(__dirname + '/dist')
 
 port = process.env.PORT || 3000
 http.createServer(app).listen(port)
