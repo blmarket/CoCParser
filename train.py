@@ -36,6 +36,15 @@ def getTrain(label):
     return rf
 
 def getPrediction(model, label):
+    # Try next iteration
+    #
+    # df = pd.io.sql.read_sql_query('''
+    # SELECT `src`.`id` as `src_id` 
+    # FROM `src` LEFT OUTER JOIN `tags` ON `src`.`id` = `tags`.`src_id`
+    # WHERE `name`='%s' AND `value` IS NULL LIMIT 1000
+    # ''' % (label), engine, index_col = 'src_id')
+
+
     df = pd.io.sql.read_sql_query(
         '''
         SELECT `id` AS `src_id`, DATA FROM `src`
