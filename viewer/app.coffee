@@ -8,14 +8,12 @@
 _ = require 'underscore'
 http = require 'http'
 express = require 'express'
-morgan = require 'morgan'
 
 db = require './lib/db'
 tags_app = require './lib/tags'
 
 app = express()
 
-app.use morgan()
 app.use (req, res, next) ->
   res.locals.pretty = true
   next()

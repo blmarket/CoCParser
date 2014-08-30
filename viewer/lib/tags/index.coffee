@@ -29,7 +29,7 @@ listMiddleware = (req, res, next) ->
     return
   return
 
-postMiddleware = [ bodyParser(), (req, res, next) ->
+postMiddleware = [ bodyParser.json(), (req, res, next) ->
   id = Number(req.param('id'))
   obj = _.pick(req.body, 'name', 'value')
   obj.probability = null
