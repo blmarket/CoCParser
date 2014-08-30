@@ -8,11 +8,14 @@
 _ = require 'underscore'
 http = require 'http'
 express = require 'express'
+cors = require 'cors'
 
 db = require './lib/db'
 tags_app = require './lib/tags'
 
 app = express()
+
+app.use cors()
 
 app.use (req, res, next) ->
   res.locals.pretty = true
