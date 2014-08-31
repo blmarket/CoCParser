@@ -36,38 +36,27 @@ def getTrain(label):
     return rf
 
 def getPrediction(model, label):
-    # Try next iteration
-    #
-    # df = pd.io.sql.read_sql_query('''
-    # SELECT `src`.`id` as `src_id` 
-    # FROM `src` LEFT OUTER JOIN `tags` ON `src`.`id` = `tags`.`src_id`
-    # WHERE `name`='%s' AND `value` IS NULL LIMIT 1000
-    # ''' % (label), engine, index_col = 'src_id')
-
-
-    df = pd.io.sql.read_sql_query(
-        '''
-        SELECT `id` AS `src_id`, DATA FROM `src`
-        WHERE `type` = '1' AND `id` NOT IN (
-            SELECT src_id FROM tags WHERE `name` = '%s'
-        ) LIMIT 1000
-        ''' % (label), engine, index_col = 'src_id'
-    )
+    df = pd.io.sql.read_sql_query('''
+    SELECT `src`.`id` as `src_id`
+    FROM `src` 
+    WHERE `id` NOT IN (SELECT `src_id` FROM `tags` WHERE `name`='%s');
+    ''' % (label), engine)
 
     if len(df) == 0:
         return None
 
-    X = pd.DataFrame(list(df['DATA'].map(lambda x: np.load(StringIO(x)))))
+    X = pd.DataFrame(list(df['src_id'].map(lambda x: np.load(StringIO(db_mysql.cache_mysql(x))))))
     result = model.predict(X)
     probs = model.predict_proba(X)
 
     df['name'] = label
     df['value'] = result
     df['probability'] = map(max, probs)
-    return df.drop(['DATA'], axis=1)
+    print df
+    return df
 
 def putResult(df):
-    pd.io.sql.to_sql(df, 'tags', engine, if_exists='append')
+    pd.io.sql.to_sql(df, 'tags', engine, if_exists='append', index=False)
 
 if __name__ == "__main__":
     for label_name in [ 'clan_place', 'name', 'attack1', 'attack2', 'total_stars' ]:
