@@ -18,11 +18,10 @@ app.use (req, res, next) ->
 # TAGS api
 app.use '/tags', tags_app.app
 
-app.get '/check', (req, res) ->
-  res.render 'tags_viewer.jade'
+# All other routes should redirect to the index.html
+app.get '/*', (req, res) ->
+  res.sendfile(__dirname + '/dist/index.html')
   return
-
-app.use '/', express.static(__dirname + '/dist')
 
 port = process.env.PORT || 3000
 http.createServer(app).listen(port)

@@ -12,9 +12,8 @@ RUN apt-get -y install nodejs
 
 RUN npm install -g coffee-script
 
-ADD . /root/CoCParser
-# can remove below line.
 ADD config.json /root/CoCParser/config.json
+ADD . /root/CoCParser
 
 WORKDIR /root/CoCParser/viewer
 
