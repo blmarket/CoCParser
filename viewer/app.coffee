@@ -18,9 +18,11 @@ app.use (req, res, next) ->
 # TAGS api
 app.use '/tags', tags_app.app
 
+app.get '/:url(api|app|bower_components|assets)/*', express.static(__dirname + '/dist')
+
 # All other routes should redirect to the index.html
 app.get '/*', (req, res) ->
-  res.sendfile(__dirname + '/dist/index.html')
+  res.sendFile(__dirname + '/dist/index.html')
   return
 
 port = process.env.PORT || 3000
