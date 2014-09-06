@@ -43,6 +43,5 @@
   },
   "_source": "git://github.com/novus/nvd3.git",
   "_target": "~1.1.15-beta",
-  "_originalSource": "git://github.com/novus/nvd3.git",
-  "_direct": true
+  "_originalSource": "git://github.com/novus/nvd3.git"
 }
