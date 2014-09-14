@@ -30,7 +30,7 @@ def getTrain(label):
     X = pd.DataFrame(list(df['src_id'].map(lambda x: np.load(StringIO(db_mysql.cache_mysql(x))))))
     y = df['value']
 
-    rf = RF(n_jobs = 3)
+    rf = RF(n_estimators = 25, n_jobs = 3, verbose = 1)
     rf.fit(X, y) # 3 is good for usual multicore system
     print "Fit complete"
     return rf
