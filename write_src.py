@@ -3,6 +3,8 @@ writes src database.
 database schema should be defined. see schema.sql
 TODO: change serializer to protobuf?
 """
+import sys
+
 import glob
 from itertools import chain
 from parse import parse
@@ -42,7 +44,7 @@ def write_src(L, title):
         pd.io.sql.write_frame(df, 'src', engine, flavor = 'mysql', if_exists = 'append')
 
 if __name__ == "__main__":
-    title = '20140808'
+    title = sys.argv[-1]
     L = chain.from_iterable(parse(filename) for filename in fetch_images(title))
 
     write_src(L, title)
