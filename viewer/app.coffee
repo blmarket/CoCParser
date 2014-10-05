@@ -3,7 +3,6 @@ http = require 'http'
 express = require 'express'
 cors = require 'cors'
 
-db = require './lib/db'
 tags_app = require './lib/tags'
 
 app = express()
