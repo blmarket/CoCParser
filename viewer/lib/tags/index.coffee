@@ -5,7 +5,7 @@ bodyParser = require 'body-parser'
 {pool, aggregate} = require './common'
 {searchMiddleware} = require './search'
 {recentMiddleware} = require './recent'
-{cleanup} = require './cleanup'
+cleanup = require './cleanup'
 
 list = (date, filter, cb) ->
   query = "SELECT tags.id, data_url, src_id, name, value, probability FROM src LEFT JOIN tags ON src.id = src_id WHERE type=1"
