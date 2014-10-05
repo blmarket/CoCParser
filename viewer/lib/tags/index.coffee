@@ -5,6 +5,7 @@ bodyParser = require 'body-parser'
 {pool, aggregate} = require './common'
 {searchMiddleware} = require './search'
 {recentMiddleware} = require './recent'
+{cleanup} = require './cleanup'
 
 list = (date, filter, cb) ->
   query = "SELECT tags.id, data_url, src_id, name, value, probability FROM src LEFT JOIN tags ON src.id = src_id WHERE type=1"
@@ -46,6 +47,7 @@ app.get '/', listMiddleware
 app.post '/:id', postMiddleware
 app.get '/search/:name', searchMiddleware
 app.get '/recent', recentMiddleware
+app.get '/cleanup', cleanup.middleware
 
 module.exports.list = list
 module.exports.app = app
