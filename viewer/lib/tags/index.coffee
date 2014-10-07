@@ -12,7 +12,7 @@ list = (date, filter, cb) ->
   query += " AND category = ?" if date?
   query += " AND probability IS NOT NULL"
   query += " AND name IN (?)" if filter?
-  query += " ORDER BY name, value LIMIT 100"
+  query += " ORDER BY probability ASC LIMIT 100"
 
   params = []
   params.push date if date?
