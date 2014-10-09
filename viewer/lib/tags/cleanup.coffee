@@ -18,7 +18,7 @@ cleanUp = (cb) ->
   return
 
 # Test 
-cleanUp -> console.log arguments
+# cleanUp -> console.log arguments
 
 middleware = (req, res, next) ->
   cleanUp (err) ->
