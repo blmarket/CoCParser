@@ -23,14 +23,14 @@ def getTrain(label):
         '''
         SELECT `src_id`, `value` FROM `tags`
         WHERE `name` = '%s' AND `probability` IS NULL
-        ORDER BY `src_id` DESC LIMIT 800
+        ORDER BY `src_id` DESC LIMIT 1200
         ''' % (label), engine
     )
 
     X = pd.DataFrame(list(df['src_id'].map(lambda x: np.load(StringIO(db_mysql.cache_mysql(x))))))
     y = df['value']
 
-    rf = RF(n_estimators = 25, n_jobs = 3, verbose = 1)
+    rf = RF(n_estimators = 50, n_jobs = 3, verbose = 1)
     rf.fit(X, y) # 3 is good for usual multicore system
     print "Fit complete"
     return rf
