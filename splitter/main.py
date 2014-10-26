@@ -20,11 +20,18 @@ def split(filename):
                 if space > 160:
                     slit = img[it-160:it]
                     yield slit
-                print it - last, it, nw
             last = it
 
+def cell_ipad(slit):
+    units = np.transpose(slit[59:120])
+
+    for ix in range(114, 500, 49):
+        io.imshow(np.transpose(units[ix:ix+46]))
 
 if __name__ == "__main__":
-    for slit in split('src.png'):
-        io.imshow(slit)
+    io.use_plugin('pil')
+    for slit in split('src2.png'):
+        cell_ipad(slit)
+        # io.imshow(slit)
+        # io.imshow(skimage.filter.sobel(slit))
     sys.exit(0)
