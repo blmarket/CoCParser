@@ -34,7 +34,7 @@ def getTrain(label):
     #     print(X)
     #     X = pd.DataFrame(X)
 
-    X = pd.DataFrame(list(df['src_id'].map(lambda x: np.load(BytesIO(db_mysql.cache_mysql(x))))))
+    X = list(df['src_id'].map(lambda x: np.load(BytesIO(db_mysql.cache_mysql(x)))))
     y = df['value']
 
     rf = RF(n_estimators = 50, n_jobs = 3, verbose = 1)
