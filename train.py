@@ -1,10 +1,10 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 Train and create prediction.
 """
 from sys import exit
-from StringIO import StringIO
+from io import BytesIO
 import sqlalchemy as sa
 import pickle
 import pandas as pd
@@ -15,6 +15,7 @@ import numpy as np
 import json
 import engine
 import db_mysql
+from concurrent.futures import ThreadPoolExecutor
 
 engine = engine.get_engine()
 
@@ -23,16 +24,22 @@ def getTrain(label):
         '''
         SELECT `src_id`, `value` FROM `tags`
         WHERE `name` = '%s' AND `probability` IS NULL
-        ORDER BY `src_id` DESC LIMIT 800
+        ORDER BY `src_id` DESC LIMIT 1200
         ''' % (label), engine
     )
 
-    X = pd.DataFrame(list(df['src_id'].map(lambda x: np.load(StringIO(db_mysql.cache_mysql(x))))))
+    # X = None
+    # with ThreadPoolExecutor(max_workers = 4) as e:
+    #     X = list(e.map(lambda x: np.load(BytesIO(db_mysql.cache_mysql(x))), df['src_id']))
+    #     print(X)
+    #     X = pd.DataFrame(X)
+
+    X = list(df['src_id'].map(lambda x: np.load(BytesIO(db_mysql.cache_mysql(x)))))
     y = df['value']
 
-    rf = RF(n_estimators = 25, n_jobs = 3, verbose = 1)
+    rf = RF(n_estimators = 50, n_jobs = 3, verbose = 1)
     rf.fit(X, y) # 3 is good for usual multicore system
-    print "Fit complete"
+    print("Fit complete")
     return rf
 
 def getPrediction(model, label):
@@ -45,14 +52,14 @@ def getPrediction(model, label):
     if len(df) == 0:
         return None
 
-    X = pd.DataFrame(list(df['src_id'].map(lambda x: np.load(StringIO(db_mysql.cache_mysql(x))))))
+    X = pd.DataFrame(list(df['src_id'].map(lambda x: np.load(BytesIO(db_mysql.cache_mysql(x))))))
     result = model.predict(X)
     probs = model.predict_proba(X)
 
     df['name'] = label
     df['value'] = result
     df['probability'] = map(max, probs)
-    print df
+    print(df)
     return df
 
 def putResult(df):
@@ -60,7 +67,7 @@ def putResult(df):
 
 if __name__ == "__main__":
     for label_name in [ 'clan_place', 'name', 'attack1', 'attack2', 'total_stars' ]:
-        print label_name
+        print(label_name)
         model = getTrain(label_name)
         prediction = getPrediction(model, label_name)
         if prediction is None:
