@@ -7,11 +7,9 @@ recent = (cb) ->
   SELECT src_id, category, data_url, name, value \
   FROM src LEFT JOIN tags ON src.id = src_id \
   WHERE src.type = '1' AND \
-  src.category IN ( \
-    SELECT MAX(category) FROM src RIGHT JOIN tags ON src.id = src_id \
-    WHERE `probability` IS NULL
-  ) AND \
-  `probability` IS NULL
+  src.category = ( \
+    SELECT category FROM src ORDER BY id DESC LIMIT 1 \
+  )
   """
 
   getV = (arr, k) -> return Number(it.value) for it in arr when it.name == k
