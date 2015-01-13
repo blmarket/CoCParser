@@ -65,10 +65,14 @@ recentMiddleware = (req, res, next) ->
 
 dateMiddleware = (req, res, next) ->
   date = req.param 'date'
-  date_view date, (err, data) ->
+  base_cb = (err, data) ->
     (next err; return) if err?
     res.jsonp data
     return
+  if date == 'latest'
+    recent base_cb
+  else
+    date_view date, base_cb
   return
 
 module.exports.recentMiddleware = recentMiddleware
