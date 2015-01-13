@@ -4,7 +4,7 @@ bodyParser = require 'body-parser'
 
 {pool, aggregate} = require './common'
 {searchMiddleware} = require './search'
-{recentMiddleware} = require './recent'
+{dateMiddleware, recentMiddleware} = require './recent'
 cleanup = require './cleanup'
 
 list = (date, filter, cb) ->
@@ -23,6 +23,7 @@ list = (date, filter, cb) ->
 
 listMiddleware = (req, res, next) ->
   filter = req.param('filter') || null
+  date = req.param('date')
   filter = filter.split ',' if filter?
   list null, filter, (err, data) ->
     (next err; return) if err?
@@ -48,6 +49,7 @@ app.post '/:id', postMiddleware
 app.get '/search/:name', searchMiddleware
 app.get '/recent', recentMiddleware
 app.get '/cleanup', cleanup.middleware
+app.get '/date/:date', dateMiddleware
 
 module.exports.list = list
 module.exports.app = app
