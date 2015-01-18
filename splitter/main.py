@@ -30,7 +30,7 @@ def cell_ipad(slit):
 
 if __name__ == "__main__":
     io.use_plugin('pil')
-    for slit in split('src2.png'):
+    for slit in split('src.png'):
         cell_ipad(slit)
         # io.imshow(slit)
         # io.imshow(skimage.filter.sobel(slit))
