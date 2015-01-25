@@ -42,8 +42,14 @@ def example_check_first_occurrence():
         # plt.show()
         # TODO: use matcher.
 
-def extract_kp(img, plot = None):
-    d1 = feature.CENSURE()
+def extract_kp(img):
+    kps = feature.corner_peaks(feature.corner_harris(img), min_distance = 2)
+    extractor = feature.BRIEF(patch_size = 5)
+    extractor.extract(img, kps)
+    return extractor.descriptors
+
+def extract_kp_CENSURE(img, plot = None):
+    d1 = feature.CENSURE(mode = 'STAR')
     d1.detect(img)
     if plot is not None:
         plot.imshow(img)
@@ -54,7 +60,7 @@ def extract_kp(img, plot = None):
 def equal_group(it, jt):
     mx = feature.match_descriptors(it, jt)
     rate = float(len(mx)) * 2 / (len(it) + len(jt))
-    return rate > 0.7
+    return rate > 0.6
 
 def get_image(key):
     idx, lr = key
@@ -82,53 +88,48 @@ def reduce_groups(keys, image_src, compare):
             jmg = get_image(jt)
             if compare(img, jmg):
                 found = True
-                dic[jt] += it
+                dic[jt] += [ it ]
                 break
         if not found:
             dic[it] = [ it ]
     return dic
 
-keys = itertools.chain.from_iterable([[ (x,0), (x,1) ] for x in range(4831, 4881)])
-
-res = reduce_groups(keys, get_image, equal_group)
-for it in res:
-    print json.dumps(it), len(res[it])
-exit(0)
-
 if __name__ == "__main__":
-    ts = range(4831, 4881)
-    # ts = ts[-5:]
+    import engine
+    import pandas as pd
+
+    e = engine.get_engine()
+
+    def getIds(label):
+        df = pd.io.sql.read_sql_query(
+                '''
+                SELECT `id` FROM `src`
+                WHERE `category` = '%s'
+                ''' % (label), e
+                )
+        return list(df['id'])
+
+    keys = itertools.product(getIds('20150124'), xrange(2))
+
+    res = reduce_groups(keys, get_image, equal_group)
 
     plt.gray()
-
-    nsample = 30
-    fig, plots = plt.subplots(nrows = nsample, ncols = 5)
+    fig, plots = plt.subplots(20, 5)
     for it in itertools.chain.from_iterable(plots):
         it.axis('off')
 
-    def images():
-        for it in ts:
-            t1, t2 = split_attacks(load_image(it))
-            yield t1
-            yield t2
+    idx = 0
+    for it in res:
+        if len(res[it]) == 1:
+            continue
+        for j, jt in enumerate(res[it]):
+            if j >= 5:
+                break
+            print j, jt
+            plots[idx][j].imshow(get_image(jt))
+        idx += 1
+        if idx >= 20:
+            break
 
-    def kps():
-        for it, jt in itertools.izip(images(), itertools.chain.from_iterable(plots)):
-            yield it, extract_kp(it)
-
-    ks = list(kps())
-    res = np.empty((len(ks), len(ks)), dtype=float)
-    for i, (img, it) in enumerate(ks[:nsample]):
-        idx = 0
-        for j, (jmg, jt) in enumerate(ks):
-            mx = feature.match_descriptors(it, jt)
-            rate = float(len(mx)) * 2 / (len(it) + len(jt))
-            res[i][j] = rate
-            if rate > 0.7 and idx < 5:
-                plots[i][idx].imshow(jmg)
-                idx += 1
-            None
-
-    np.set_printoptions(linewidth = 130)
-    print res
     plt.show()
+    exit(0)
