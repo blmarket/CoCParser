@@ -109,7 +109,7 @@ if __name__ == "__main__":
                 )
         return list(df['id'])
 
-    keys = itertools.product(getIds('20150124'), xrange(2))
+    keys = itertools.product(getIds('20150122'), xrange(2))
 
     res = reduce_groups(keys, get_image, equal_group)
 
