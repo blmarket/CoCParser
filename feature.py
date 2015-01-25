@@ -42,6 +42,7 @@ def example_check_first_occurrence():
         # plt.show()
         # TODO: use matcher.
 
+
 orb = feature.ORB()
 
 def extract_orb(img):
@@ -53,7 +54,7 @@ def extract_orb(img):
 
 def extract_kp(img):
     kps = feature.corner_peaks(feature.corner_harris(img), min_distance = 2)
-    bb = feature.BRIEF(patch_size = 5)
+    bb = feature.BRIEF(patch_size = 18)
     bb.extract(img, kps)
     return bb.descriptors
 
@@ -67,19 +68,21 @@ def extract_kp_CENSURE(img, plot = None):
     return d1.keypoints
 
 def matcher(method):
+    threshold_rate = 0.85
+
     def equal_group(it, jt):
         mx = feature.match_descriptors(it, jt)
         rate = float(len(mx)) * 2 / (len(it) + len(jt))
-        if rate > 0.6:
+        if rate > threshold_rate:
             print rate
-        return rate > 0.6
+        return rate > threshold_rate
 
     def func(a, b):
         return equal_group(method(a), method(b))
     return func
 
 """Actual matcher being used"""
-default_matcher = matcher(extract_orb)
+default_matcher = matcher(extract_kp)
 
 def get_image(key):
     idx, lr = key
@@ -104,11 +107,19 @@ def reduce_groups(keys, image_src, compare):
         img = image_src(it)
         found = False
         for jt in dic:
-            jmg = get_image(jt)
-            if compare(img, jmg):
-                found = True
-                dic[jt] += [ it ]
-                break
+            match = True
+            for kt in dic[jt]:
+                kmg = image_src(kt)
+                if not compare(img, kmg):
+                    match = False
+                    break
+
+            if not match:
+                continue
+
+            found = True
+            dic[jt] += [ it ]
+            break
         if not found:
             dic[it] = [ it ]
     return dic
@@ -119,7 +130,8 @@ if __name__ == "__main__":
 
     res = reduce_groups(keys, get_image, default_matcher)
 
-    fig, plots = plt.subplots(20, 5)
+    max_matches = 30
+    fig, plots = plt.subplots(max_matches, 5)
     plt.gray()
     for it in itertools.chain.from_iterable(plots):
         it.axis('off')
@@ -134,8 +146,7 @@ if __name__ == "__main__":
             print j, jt
             plots[idx][j].imshow(get_image(jt))
         idx += 1
-        if idx >= 20:
+        if idx >= max_matches:
             break
 
     plt.show()
-    exit(0)
