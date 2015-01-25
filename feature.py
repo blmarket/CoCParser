@@ -42,11 +42,20 @@ def example_check_first_occurrence():
         # plt.show()
         # TODO: use matcher.
 
+orb = feature.ORB()
+
+def extract_orb(img):
+    print img
+    orb.detect_and_extract(img)
+    ret = orb.descriptors
+    print ret
+    return ret
+
 def extract_kp(img):
     kps = feature.corner_peaks(feature.corner_harris(img), min_distance = 2)
-    extractor = feature.BRIEF(patch_size = 5)
-    extractor.extract(img, kps)
-    return extractor.descriptors
+    bb = feature.BRIEF(patch_size = 5)
+    bb.extract(img, kps)
+    return bb.descriptors
 
 def extract_kp_CENSURE(img, plot = None):
     d1 = feature.CENSURE(mode = 'STAR')
@@ -57,10 +66,20 @@ def extract_kp_CENSURE(img, plot = None):
         plot.scatter(d1.keypoints[:, 1], d1.keypoints[:, 0])
     return d1.keypoints
 
-def equal_group(it, jt):
-    mx = feature.match_descriptors(it, jt)
-    rate = float(len(mx)) * 2 / (len(it) + len(jt))
-    return rate > 0.6
+def matcher(method):
+    def equal_group(it, jt):
+        mx = feature.match_descriptors(it, jt)
+        rate = float(len(mx)) * 2 / (len(it) + len(jt))
+        if rate > 0.6:
+            print rate
+        return rate > 0.6
+
+    def func(a, b):
+        return equal_group(method(a), method(b))
+    return func
+
+"""Actual matcher being used"""
+default_matcher = matcher(extract_orb)
 
 def get_image(key):
     idx, lr = key
@@ -95,27 +114,13 @@ def reduce_groups(keys, image_src, compare):
     return dic
 
 if __name__ == "__main__":
-    import engine
-    import pandas as pd
-
-    e = engine.get_engine()
-
-    def getIds(label):
-        df = pd.io.sql.read_sql_query(
-                '''
-                SELECT `id` FROM `src`
-                WHERE `category` = '%s'
-                ''' % (label), e
-                )
-        return list(df['id'])
-
-    raw_keys = itertools.product(getIds('20150122'), xrange(2))
+    raw_keys = itertools.product(db_mysql.cache_ids('20150124'), xrange(2))
     keys = itertools.ifilter(lambda x: int(db_mysql.cache_attack(x)) >= 0, raw_keys)
 
-    res = reduce_groups(keys, get_image, equal_group)
+    res = reduce_groups(keys, get_image, default_matcher)
 
-    plt.gray()
     fig, plots = plt.subplots(20, 5)
+    plt.gray()
     for it in itertools.chain.from_iterable(plots):
         it.axis('off')
 
