@@ -17,7 +17,7 @@ def split_attacks(x):
     Return attack slits from one attack image.
     positions are pre-calculated
     """
-    return x[:, 460:645], x[:, 645:830]
+    return x[21:, 460:645], x[21:, 645:830]
 
 def load_image(it):
     return np.load(BytesIO(db_mysql.cache_mysql(str(it)))).reshape([52, 1024])
@@ -41,18 +41,30 @@ def example_check_first_occurrence():
         # plt.show()
         # TODO: use matcher.
 
+def extract_kp(img, plot = None):
+    d1 = feature.CENSURE()
+    d1.detect(img)
+    if plot is not None:
+        plot.imshow(img)
+        plot.axis('off')
+        plot.scatter(d1.keypoints[:, 1], d1.keypoints[:, 0])
+    return d1.keypoints
+
 if __name__ == "__main__":
-    for it in range(4031, 4051):
+    ts = range(4831, 4851)
+    ts = ts[-5:]
+
+    plt.gray()
+    fig, plots = plt.subplots(nrows = len(ts), ncols = 2)
+
+    for idx, it in enumerate(ts):
         x = load_image(it)
         t1, t2 = split_attacks(x)
 
-        # io.imshow(t1, 'pil')
-        # io.imshow(t2, 'pil')
+        p1 = plots[idx][0]
+        p2 = plots[idx][1]
 
-        d1 = feature.CENSURE()
-        d2 = feature.CENSURE()
+        extract_kp(t1, plot = p1)
+        extract_kp(t2, plot = p2)
 
-        d1.detect(t1)
-        d2.detect(t2)
-
-        print feature.match_descriptors(d1.keypoints, d2.keypoints)
+    plt.show()
