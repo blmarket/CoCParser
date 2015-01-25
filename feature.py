@@ -11,6 +11,7 @@ import numpy as np
 import json
 import db_mysql
 from matplotlib import pyplot as plt
+import itertools
 
 def split_attacks(x):
     """
@@ -50,21 +51,85 @@ def extract_kp(img, plot = None):
         plot.scatter(d1.keypoints[:, 1], d1.keypoints[:, 0])
     return d1.keypoints
 
+def equal_group(it, jt):
+    mx = feature.match_descriptors(it, jt)
+    rate = float(len(mx)) * 2 / (len(it) + len(jt))
+    return rate > 0.7
+
+def get_image(key):
+    idx, lr = key
+    return split_attacks(load_image(idx))[lr]
+
+def reduce_groups(keys, image_src, compare):
+    """Clustering similar images
+
+    Parameters
+    ----------
+
+    kv: [ key ] iterable
+    image_src: method which accepts key and returns image for that key
+    compare: method which accepts (image, image) and returns Boolean
+
+    Returns
+    -------
+
+    { unique_id: [ keys ] } dict
+    """
+    dic = { }
+    for it in keys:
+        img = image_src(it)
+        found = False
+        for jt in dic:
+            jmg = get_image(jt)
+            if compare(img, jmg):
+                found = True
+                dic[jt] += it
+                break
+        if not found:
+            dic[it] = [ it ]
+    return dic
+
+keys = itertools.chain.from_iterable([[ (x,0), (x,1) ] for x in range(4831, 4881)])
+
+res = reduce_groups(keys, get_image, equal_group)
+for it in res:
+    print json.dumps(it), len(res[it])
+exit(0)
+
 if __name__ == "__main__":
-    ts = range(4831, 4851)
-    ts = ts[-5:]
+    ts = range(4831, 4881)
+    # ts = ts[-5:]
 
     plt.gray()
-    fig, plots = plt.subplots(nrows = len(ts), ncols = 2)
 
-    for idx, it in enumerate(ts):
-        x = load_image(it)
-        t1, t2 = split_attacks(x)
+    nsample = 30
+    fig, plots = plt.subplots(nrows = nsample, ncols = 5)
+    for it in itertools.chain.from_iterable(plots):
+        it.axis('off')
 
-        p1 = plots[idx][0]
-        p2 = plots[idx][1]
+    def images():
+        for it in ts:
+            t1, t2 = split_attacks(load_image(it))
+            yield t1
+            yield t2
 
-        extract_kp(t1, plot = p1)
-        extract_kp(t2, plot = p2)
+    def kps():
+        for it, jt in itertools.izip(images(), itertools.chain.from_iterable(plots)):
+            yield it, extract_kp(it)
 
+    ks = list(kps())
+    res = np.empty((len(ks), len(ks)), dtype=float)
+    for i, (img, it) in enumerate(ks[:nsample]):
+        idx = 0
+        for j, (jmg, jt) in enumerate(ks):
+            mx = feature.match_descriptors(it, jt)
+            rate = float(len(mx)) * 2 / (len(it) + len(jt))
+            res[i][j] = rate
+            if rate > 0.7 and idx < 5:
+                plots[i][idx].imshow(jmg)
+                idx += 1
+            None
+
+    np.set_printoptions(linewidth = 130)
+    print res
     plt.show()
