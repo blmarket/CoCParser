@@ -65,15 +65,14 @@ def reduce_groups(keys, image_src, compare):
 
     Parameters
     ----------
-
     kv: [ key ] iterable
     image_src: method which accepts key and returns image for that key
     compare: method which accepts (image, image) and returns Boolean
 
     Returns
     -------
-
     { unique_id: [ keys ] } dict
+
     """
     dic = { }
     for it in keys:
