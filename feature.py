@@ -91,6 +91,8 @@ def get_image(key):
 def reduce_groups(keys, image_src, compare):
     """Clustering similar images
 
+    TODO: Should use union find algorithm for better efficiency.
+
     Parameters
     ----------
     kv: [ key ] iterable
