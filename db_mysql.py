@@ -17,6 +17,10 @@ def get_tag_from_mysql(tup):
     with engine.connect() as conn:
         return conn.execute("SELECT value FROM tags WHERE src_id = %s AND name = '%s'" % (src_id, name)).fetchone()[0]
 
+def update_tag_from_mysql(src_id, name, value):
+    with engine.connect() as conn:
+        conn.execute("UPDATE tags SET value = %s WHERE src_id = %s AND name = '%s'" % (value, src_id, name))
+
 def get_id_list_from_mysql(category):
     with engine.connect() as conn:
         return compact_json(map(lambda x: x[0], conn.execute("SELECT id FROM src WHERE category = '%s'" % category).fetchall()))
