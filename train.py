@@ -15,7 +15,6 @@ import numpy as np
 import json
 import engine
 import db_mysql
-# from concurrent.futures import ThreadPoolExecutor
 
 engine = engine.get_engine()
 
@@ -27,13 +26,6 @@ def getTrain(label):
         ORDER BY `src_id` DESC LIMIT 2000
         ''' % (label), engine
     )
-
-    # I think it also works, but performance boost is not so much.
-    # X = None
-    # with ThreadPoolExecutor(max_workers = 4) as e:
-    #     X = list(e.map(lambda x: np.load(BytesIO(db_mysql.cache_mysql(x))), df['src_id']))
-    #     print(X)
-    #     X = pd.DataFrame(X)
 
     X = list(df['src_id'].map(lambda x: np.load(BytesIO(db_mysql.cache_mysql(x)))))
     y = df['value']
