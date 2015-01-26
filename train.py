@@ -29,6 +29,8 @@ def getTrain(label):
 
     X = list(df['src_id'].map(lambda x: np.load(BytesIO(db_mysql.cache_mysql(x)))))
     y = df['value']
+    if label == 'atk_eff1' or label == 'atk_eff2': # sorry, crappy label check here.
+        y = y.map(lambda x: 1 if x != 0 else 0)
 
     rf = RF(n_estimators = 150, n_jobs = 3, verbose = 1)
     rf.fit(X, y) # 3 is good for usual multicore system
