@@ -125,7 +125,7 @@ def reduce_groups(keys, image_src, compare):
     return dic
 
 if __name__ == "__main__":
-    raw_keys = itertools.product(db_mysql.cache_ids('20150124'), xrange(2))
+    raw_keys = itertools.product(db_mysql.cache_ids('20150126'), xrange(2))
     keys = itertools.ifilter(lambda x: int(db_mysql.cache_attack(x)) >= 0, raw_keys)
 
     res = reduce_groups(keys, get_image, default_matcher)
@@ -145,6 +145,7 @@ if __name__ == "__main__":
                 break
             print j, jt
             plots[idx][j].imshow(get_image(jt))
+            plots[idx][j].set_title(jt)
         idx += 1
         if idx >= max_matches:
             break
