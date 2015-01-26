@@ -132,16 +132,19 @@ if __name__ == "__main__":
 
     res = reduce_groups(keys, get_image, default_matcher)
 
-    max_matches = 30
+    max_matches = 45
     fig, plots = plt.subplots(max_matches, 5)
     plt.gray()
     for it in itertools.chain.from_iterable(plots):
         it.axis('off')
 
-    idx = 0
     for it in res:
-        if len(res[it]) == 1:
-            continue
+        tmp = filter(lambda (src_id, idx): int(db_mysql.cache_tag(src_id, "atk_eff%s" % (idx+1))) > 0, res[it])
+        if len(tmp) == 0:
+            plots[0][0].imshow(get_image(res[it][0]))
+
+    idx = 1
+    for it in res:
         for j, jt in enumerate(res[it]):
             if j >= 5:
                 break
