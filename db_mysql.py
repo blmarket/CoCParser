@@ -21,6 +21,10 @@ def update_tag_from_mysql(src_id, name, value):
     with engine.connect() as conn:
         conn.execute("UPDATE tags SET value = %s WHERE src_id = %s AND name = '%s'" % (value, src_id, name))
 
+def mark_most(src_id, pos):
+    with engine.connect() as conn:
+        conn.execute("INSERT INTO tags (src_id, name, value) VALUES ('%s', '%s', '%s')" % (src_id, "most%s" % pos, 1))
+
 def get_id_list_from_mysql(category):
     with engine.connect() as conn:
         return compact_json(map(lambda x: x[0], conn.execute("SELECT id FROM src WHERE category = '%s'" % category).fetchall()))

@@ -5,12 +5,10 @@ TODO: fill this area
 """
 from sys import exit
 from io import BytesIO
-from skimage import io
-from skimage import feature
+from skimage import io, feature
 import numpy as np
 import json
 import db_mysql
-from matplotlib import pyplot as plt
 import itertools
 
 def split_attacks(x):
@@ -126,33 +124,24 @@ def reduce_groups(keys, image_src, compare):
             dic[it] = [ it ]
     return dic
 
-if __name__ == "__main__":
-    raw_keys = itertools.product(db_mysql.cache_ids('20150126'), xrange(2))
+def generate_groups(date):
+    raw_keys = itertools.product(db_mysql.cache_ids(date), xrange(2))
     keys = itertools.ifilter(lambda x: int(db_mysql.cache_attack(x)) >= 0, raw_keys)
 
-    res = reduce_groups(keys, get_image, default_matcher)
+    return reduce_groups(keys, get_image, default_matcher)
 
-    max_matches = 45
-    fig, plots = plt.subplots(max_matches, 5)
-    plt.gray()
-    for it in itertools.chain.from_iterable(plots):
-        it.axis('off')
+gs = json.loads("""[[[5184, 0], [5197, 0]], [[5159, 0]], [[5164, 0], [5192, 1]], [[5158, 1], [5178, 0]], [[5155, 1], [5157, 1], [5159, 1], [5160, 1], [5161, 1], [5163, 1], [5167, 1], [5171, 1], [5175, 1], [5178, 1], [5180, 1], [5181, 1], [5182, 1], [5188, 1], [5196, 0]], [[5190, 0]], [[5168, 1]], [[5154, 0]], [[5187, 1]], [[5180, 0], [5181, 0]], [[5174, 1], [5191, 0], [5193, 1]], [[5185, 0]], [[5165, 0], [5175, 0]], [[5184, 1]], [[5170, 0]], [[5164, 1]], [[5155, 0]], [[5183, 0]], [[5190, 1], [5194, 1]], [[5160, 0], [5169, 1]], [[5154, 1]], [[5186, 0]], [[5177, 1]], [[5171, 0]], [[5156, 0], [5157, 0], [5162, 0]], [[5191, 1]], [[5161, 0]], [[5182, 0]], [[5187, 0], [5195, 0]], [[5173, 1], [5176, 0], [5177, 0]], [[5167, 0], [5170, 1]], [[5186, 1]], [[5172, 0]], [[5166, 1]], [[5198, 0]], [[5189, 1], [5198, 1]], [[5156, 1], [5163, 0], [5173, 0]], [[5188, 0]], [[5193, 0]], [[5179, 1], [5192, 0], [5196, 1], [5197, 1]], [[5172, 1], [5176, 1]], [[5158, 0], [5165, 1], [5166, 0], [5169, 0]], [[5168, 0], [5174, 0], [5179, 0]], [[5189, 0]], [[5194, 0]], [[5183, 1], [5185, 1]]]""")
 
-    for it in res:
-        tmp = filter(lambda (src_id, idx): int(db_mysql.cache_tag(src_id, "atk_eff%s" % (idx+1))) > 0, res[it])
-        if len(tmp) == 0:
-            plots[0][0].imshow(get_image(res[it][0]))
+# gs = generate_groups('20150126').values()
 
-    idx = 1
-    for it in res:
-        for j, jt in enumerate(res[it]):
-            if j >= 5:
-                break
-            print j, jt
-            plots[idx][j].imshow(get_image(jt))
-            plots[idx][j].set_title(jt)
-        idx += 1
-        if idx >= max_matches:
-            break
+for it in gs:
+    fn = lambda (x, y): int(db_mysql.cache_tag(x, "atk_eff%s" % (y + 1)))
+    atk_fn = lambda (x, y): int(db_mysql.cache_tag(x, "attack%s" % (y+1)))
 
-    plt.show()
+    fxx = filter(lambda x: fn(x) > 0, it)
+    if len(fxx) == 0:
+        continue
+
+    mark_fn = lambda (x, y): db_mysql.mark_most(x, y + 1)
+
+    mark_fn(max(fxx, key = atk_fn))
