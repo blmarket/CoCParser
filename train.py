@@ -23,7 +23,7 @@ def getTrain(label):
         '''
         SELECT `src_id`, `value` FROM `tags`
         WHERE `name` = '%s' AND `probability` IS NULL
-        ORDER BY `src_id` DESC LIMIT 2000
+        ORDER BY `src_id` DESC LIMIT 1200
         ''' % (label), engine
     )
 
