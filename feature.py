@@ -3,7 +3,7 @@
 """
 TODO: fill this area
 """
-from sys import exit
+from sys import exit, argv
 from io import BytesIO
 from skimage import io, feature
 import numpy as np
@@ -132,7 +132,7 @@ def generate_groups(date):
     return reduce_groups(keys, get_image, default_matcher)
 
 if __name__ == "__main__":
-    date = sys.argv[-1]
+    date = argv[-1]
     gs = generate_groups(date).values()
     s = Session()
 
