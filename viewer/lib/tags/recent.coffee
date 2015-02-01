@@ -38,24 +38,6 @@ recent = (cb) ->
     return
   return
 
-recent_v2 = (cb) ->
-  query = "SELECT category FROM src ORDER BY id DESC LIMIT 1"
-  pool.query query, (err, rows) ->
-    (cb err; return) if err?
-    now = rows[0].category
-    console.log now
-    f1 = (cb) -> date_view now, cb
-    f2 = (cb) -> date_browse now, cb
-    async.parallel [ f1, f2 ], (err, results) ->
-      (cb err; return) if err?
-      cb null, {
-        list: results[0]
-        browse: results[1]
-      }
-      return
-    return
-  return
-
 recentMiddleware = (req, res, next) ->
   recent (err, data) ->
     (next err; return) if err?
