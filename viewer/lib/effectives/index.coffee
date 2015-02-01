@@ -4,7 +4,7 @@ bodyParser = require 'body-parser'
 
 {recent} = require '../recent_date'
 
-recent -> console.log arguments
+recent (err, res) -> console.log arguments
 
 # 
 # list = (date, filter, cb) ->

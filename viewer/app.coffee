@@ -24,6 +24,7 @@ app.use (req, res, next) ->
 
 # TAGS api
 app.use '/tags', tags_app.app
+app.use '/effectives', effectives.app
 
 mutt_auth = (name = 'anonymous', admin = false) ->
   ts = Math.round(+new Date / 1000)
