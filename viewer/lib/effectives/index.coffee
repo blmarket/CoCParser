@@ -1,55 +1,38 @@
-_ = require 'underscore'
+_ = require 'lodash'
 express = require 'express'
 bodyParser = require 'body-parser'
 
 {recent} = require '../recent_date'
+{pool} = require '../common'
 
-recent (err, res) -> console.log arguments
+handle_recent = (req, res, next) ->
+  date = req.params.date
+  if date == 'recent'
+    recent (err, recent_date) ->
+      (next err; return) if err?
+      req.params.date = recent_date
+      next()
+      return
+  next()
+  return
 
-# 
-# list = (date, filter, cb) ->
-#   query = "SELECT tags.id, data_url, src_id, name, value, probability FROM src LEFT JOIN tags ON src.id = src_id WHERE type=1"
-#   query += " AND category = ?" if date?
-#   query += " AND probability IS NOT NULL"
-#   query += " AND name IN (?)" if filter?
-#   query += " ORDER BY probability ASC LIMIT 100"
-# 
-#   params = []
-#   params.push date if date?
-#   params.push filter if filter?
-# 
-#   pool.query query, params, cb
-#   return
-# 
-# listMiddleware = (req, res, next) ->
-#   filter = req.param('filter') || null
-#   date = req.param('date')
-#   filter = filter.split ',' if filter?
-#   list null, filter, (err, data) ->
-#     (next err; return) if err?
-#     res.jsonp data
-#     return
-#   return
-# 
-# postMiddleware = [ bodyParser.json(), (req, res, next) ->
-#   id = Number(req.param('id'))
-#   obj = _.pick(req.body, 'name', 'value')
-#   obj.probability = null
-# 
-#   pool.query "UPDATE tags SET ? WHERE id = ?", [ obj, id ], (err) ->
-#     (next err; return) if err?
-#     res.send 204
-#     return
-#   return
-# ]
-# 
-# app = express()
-# app.get '/', listMiddleware
-# app.post '/:id', postMiddleware
-# app.get '/search/:name', searchMiddleware
-# app.get '/recent', recentMiddleware
-# app.get '/cleanup', cleanup.middleware
-# app.get '/date/:date', dateMiddleware
-# 
-# module.exports.list = list
-# module.exports.app = app
+by_date = (date, cb) ->
+  pool.query '''
+  SELECT * FROM eff_atks WHERE date = ?
+  ''', [ date ], (err, res) ->
+    (cb err; return) if err?
+    grouped = _.sortBy(_.values(_.groupBy(res, (obj) -> obj.group_id)), 'length')
+    cb null, grouped
+    return
+  return
+
+app = express()
+app.get '/date/:date', handle_recent, (req, res, next) ->
+  date = req.params.date
+  by_date date, (err, data) ->
+    (next err; return) if err?
+    res.jsonp data
+    return
+  return
+
+module.exports.app = app
