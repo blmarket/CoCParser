@@ -1,9 +1,31 @@
 import engine as e
 import redis
 import json
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy import Column, Integer, String, UniqueConstraint, Unicode
+
+Base = declarative_base()
+
+class Effectives(Base):
+    __tablename__ = 'eff_atks'
+    __table_args__ = (
+            UniqueConstraint('date', 'group_id', 'group_idx'),
+            )
+
+    id = Column(Integer, primary_key = True)
+    date = Column(Unicode(128, collation = 'utf8_general_ci'), nullable = False)
+    src_id = Column(Integer, nullable = False)
+    atk_id = Column(Integer, nullable = False)
+    group_id = Column(Integer, nullable = False)
+    group_idx = Column(Integer, nullable = False)
+
 
 engine = e.get_engine()
 r = redis.StrictRedis()
+
+Base.metadata.create_all(engine)
+Session = sessionmaker(bind = engine)
 
 def compact_json(obj):
     return json.dumps(obj, separators=(',',':'))
@@ -20,10 +42,6 @@ def get_tag_from_mysql(tup):
 def update_tag_from_mysql(src_id, name, value):
     with engine.connect() as conn:
         conn.execute("UPDATE tags SET value = %s WHERE src_id = %s AND name = '%s'" % (value, src_id, name))
-
-def mark_most(src_id, pos):
-    with engine.connect() as conn:
-        conn.execute("INSERT INTO tags (src_id, name, value) VALUES ('%s', '%s', '%s')" % (src_id, "most%s" % pos, 1))
 
 def get_id_list_from_mysql(category):
     with engine.connect() as conn:
