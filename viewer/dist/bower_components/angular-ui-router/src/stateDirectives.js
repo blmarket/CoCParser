@@ -86,7 +86,6 @@ function $StateRefDirective($state, $timeout) {
     link: function(scope, element, attrs, uiSrefActive) {
       var ref = parseStateRef(attrs.uiSref, $state.current.name);
       var params = null, url = null, base = stateContext(element) || $state.$current;
-      var newHref = null, isAnchor = element.prop("tagName") === "A";
       var isForm = element[0].nodeName === "FORM";
       var attr = isForm ? "action" : "href", nav = true;
 
@@ -100,10 +99,10 @@ function $StateRefDirective($state, $timeout) {
       });
 
       var update = function(newVal) {
-        if (newVal) params = angular.copy(newVal);
+        if (newVal) params = newVal;
         if (!nav) return;
 
-        newHref = $state.href(ref.state, params, options);
+        var newHref = $state.href(ref.state, params, options);
 
         var activeDirective = uiSrefActive[1] || uiSrefActive[0];
         if (activeDirective) {
@@ -113,14 +112,14 @@ function $StateRefDirective($state, $timeout) {
           nav = false;
           return false;
         }
-        attrs.$set(attr, newHref);
+        element[0][attr] = newHref;
       };
 
       if (ref.paramExpr) {
         scope.$watch(ref.paramExpr, function(newVal, oldVal) {
           if (newVal !== params) update(newVal);
         }, true);
-        params = angular.copy(scope.$eval(ref.paramExpr));
+        params = scope.$eval(ref.paramExpr);
       }
       update();
 
@@ -135,11 +134,8 @@ function $StateRefDirective($state, $timeout) {
           });
           e.preventDefault();
 
-          // if the state has no URL, ignore one preventDefault from the <a> directive.
-          var ignorePreventDefaultCount = isAnchor && !newHref ? 1: 0;
           e.preventDefault = function() {
-            if (ignorePreventDefaultCount-- <= 0)
-              $timeout.cancel(transition);
+            $timeout.cancel(transition);
           };
         }
       });
@@ -217,7 +213,7 @@ function $StateRefDirective($state, $timeout) {
  * @restrict A
  *
  * @description
- * The same as {@link ui.router.state.directive:ui-sref-active ui-sref-active} but will only activate
+ * The same as {@link ui.router.state.directive:ui-sref-active ui-sref-active} but will will only activate
  * when the exact target state used in the `ui-sref` is active; no child states.
  *
  */
@@ -253,10 +249,14 @@ function $StateRefActiveDirective($state, $stateParams, $interpolate) {
 
       function isMatch() {
         if (typeof $attrs.uiSrefActiveEq !== 'undefined') {
-          return state && $state.is(state.name, params);
+          return $state.$current.self === state && matchesParams();
         } else {
-          return state && $state.includes(state.name, params);
+          return $state.includes(state.name) && matchesParams();
         }
+      }
+
+      function matchesParams() {
+        return !params || equalForKeys(params, $stateParams);
       }
     }]
   };

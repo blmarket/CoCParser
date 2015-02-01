@@ -120,8 +120,6 @@ define([
 
 			reliableMarginRightVal =
 				!parseFloat( ( window.getComputedStyle( contents, null ) || {} ).marginRight );
-
-			div.removeChild( contents );
 		}
 
 		// Support: IE8
