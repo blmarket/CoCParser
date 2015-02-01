@@ -146,9 +146,10 @@ if __name__ == "__main__":
 
         arr = sorted(it, key = combined_fn)
 
-        nk = arr[0][0]
-        if nk not in mosts: mosts[nk] = 0
-        mosts[nk] += 1
+        if atk_fn(arr[0]) > 0:
+            nk = arr[0][0]
+            if nk not in mosts: mosts[nk] = 0
+            mosts[nk] += 1
 
         for j, jt in enumerate(arr):
             s.add(Effectives(date=date, src_id=jt[0], atk_id=jt[1], group_id=i, group_idx=j))
