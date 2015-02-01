@@ -27,6 +27,10 @@ r = redis.StrictRedis()
 Base.metadata.create_all(engine)
 Session = sessionmaker(bind = engine)
 
+def add_tag(src_id, tag_name, value):
+    with engine.connect() as conn:
+        conn.execute("INSERT INTO tags (src_id, name, value) VALUES ('%s', '%s', '%s')" % (src_id, tag_name, value))
+
 def compact_json(obj):
     return json.dumps(obj, separators=(',',':'))
 

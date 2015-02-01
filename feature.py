@@ -131,26 +131,28 @@ def generate_groups(date):
 
     return reduce_groups(keys, get_image, default_matcher)
 
-gs = json.loads("""[[[5184, 0], [5197, 0]], [[5159, 0]], [[5164, 0], [5192, 1]], [[5158, 1], [5178, 0]], [[5155, 1], [5157, 1], [5159, 1], [5160, 1], [5161, 1], [5163, 1], [5167, 1], [5171, 1], [5175, 1], [5178, 1], [5180, 1], [5181, 1], [5182, 1], [5188, 1], [5196, 0]], [[5190, 0]], [[5168, 1]], [[5154, 0]], [[5187, 1]], [[5180, 0], [5181, 0]], [[5174, 1], [5191, 0], [5193, 1]], [[5185, 0]], [[5165, 0], [5175, 0]], [[5184, 1]], [[5170, 0]], [[5164, 1]], [[5155, 0]], [[5183, 0]], [[5190, 1], [5194, 1]], [[5160, 0], [5169, 1]], [[5154, 1]], [[5186, 0]], [[5177, 1]], [[5171, 0]], [[5156, 0], [5157, 0], [5162, 0]], [[5191, 1]], [[5161, 0]], [[5182, 0]], [[5187, 0], [5195, 0]], [[5173, 1], [5176, 0], [5177, 0]], [[5167, 0], [5170, 1]], [[5186, 1]], [[5172, 0]], [[5166, 1]], [[5198, 0]], [[5189, 1], [5198, 1]], [[5156, 1], [5163, 0], [5173, 0]], [[5188, 0]], [[5193, 0]], [[5179, 1], [5192, 0], [5196, 1], [5197, 1]], [[5172, 1], [5176, 1]], [[5158, 0], [5165, 1], [5166, 0], [5169, 0]], [[5168, 0], [5174, 0], [5179, 0]], [[5189, 0]], [[5194, 0]], [[5183, 1], [5185, 1]]]""")
+if __name__ == "__main__":
+    date = sys.argv[-1]
+    gs = generate_groups(date).values()
+    s = Session()
 
-# gs = generate_groups('20150130').values()
+    mosts = {}
 
-date = u'20150130'
-s = Session()
+    for i, it in enumerate(gs):
+        fn = lambda (x, y): int(db_mysql.cache_tag(x, "atk_eff%s" % (y + 1)))
+        atk_fn = lambda (x, y): int(db_mysql.cache_tag(x, "attack%s" % (y+1)))
 
-for i, it in enumerate(gs):
-    fn = lambda (x, y): int(db_mysql.cache_tag(x, "atk_eff%s" % (y + 1)))
-    atk_fn = lambda (x, y): int(db_mysql.cache_tag(x, "attack%s" % (y+1)))
+        combined_fn = lambda v: -(atk_fn(v) * 10 + fn(v))
 
-    combined_fn = lambda v: atk_fn(v) * 10 + fn(v)
+        arr = sorted(it, key = combined_fn)
 
-    for j, jt in enumerate(sorted(it, key = combined_fn)):
-        s.add(Effectives(date=date, src_id=jt[0], atk_id=jt[1], group_id=i, group_idx=j))
-        s.commit()
+        nk = arr[0][0]
+        if nk not in mosts: mosts[nk] = 0
+        mosts[nk] += 1
 
-    # fxx = filter(lambda x: fn(x) > 0, it)
-    # if len(fxx) == 0:
-    #     continue
+        for j, jt in enumerate(arr):
+            s.add(Effectives(date=date, src_id=jt[0], atk_id=jt[1], group_id=i, group_idx=j))
+            s.commit()
 
-    # mark_fn = lambda (x, y): db_mysql.mark_most(x, y + 1)
-    # mark_fn(max(fxx, key = atk_fn))
+    for it in mosts:
+        db_mysql.add_tag(it, "most", mosts[it])

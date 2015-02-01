@@ -13,15 +13,16 @@ handle_recent = (req, res, next) ->
       req.params.date = recent_date
       next()
       return
+    return
   next()
   return
 
 by_date = (date, cb) ->
   pool.query '''
-  SELECT * FROM eff_atks WHERE date = ?
+  SELECT eff_atks.*, src.data_url AS data_url FROM eff_atks LEFT JOIN src ON src_id = src.id WHERE date = ?
   ''', [ date ], (err, res) ->
     (cb err; return) if err?
-    grouped = _.sortBy(_.values(_.groupBy(res, (obj) -> obj.group_id)), 'length')
+    grouped = _.map(_.values(_.groupBy(res, (obj) -> obj.group_id)), (x) -> { group_id: x[0].group_id, data: x })
     cb null, grouped
     return
   return

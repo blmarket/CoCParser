@@ -4,14 +4,8 @@ express = require 'express'
 cors = require 'cors'
 crypto = require 'crypto'
 
-sha1_hash = (str) ->
-  sum = crypto.createHash 'sha1'
-  sum.update str
-  return sum.digest 'hex'
-
-config = require '../config.json'
-
 tags_app = require './lib/tags'
+effectives_app = require './lib/effectives'
 
 app = express()
 
@@ -24,29 +18,8 @@ app.use (req, res, next) ->
 
 # TAGS api
 app.use '/tags', tags_app.app
-app.use '/effectives', effectives.app
-
-mutt_auth = (name = 'anonymous', admin = false) ->
-  ts = Math.round(+new Date / 1000)
-  msg = new Buffer(JSON.stringify { user: {
-    id: name
-    displayname: name
-    email: ''
-    avatar: ''
-    is_admin: admin
-  } }).toString('base64')
-  signature = sha1_hash("#{config.muut.secret} #{msg} #{ts}")
-
-  return { api: {
-    key: config.muut.key
-    timestamp: ts
-    message: msg
-    signature: signature
-  } }
-
-app.get '/api/muut', (req, res, next) ->
-  res.jsonp mutt_auth()
-  return
+app.use '/v1/tags', tags_app.app
+app.use '/v0/effectives', effectives_app.app
 
 app.get '/:url(api|app|bower_components|assets)/*', express.static(__dirname + '/dist')
 
