@@ -1,7 +1,8 @@
 _ = require 'underscore'
 async = require 'async'
 
-{pool, aggregate} = require './common'
+{pool, aggregate} = require '../common'
+{recent} = require '../recent_date'
 
 date_view = (date, cb) ->
   query = """
@@ -30,18 +31,12 @@ date_browse = (date, cb) ->
     return
   return
 
-recent = (cb) ->
-  query = "SELECT category FROM src ORDER BY id DESC LIMIT 1"
-  pool.query query, (err, rows) ->
-    (cb err; return) if err?
-    date_view rows[0].category, cb
-    return
-  return
-
 recentMiddleware = (req, res, next) ->
-  recent (err, data) ->
+  recent (err, date) ->
     (next err; return) if err?
-    res.jsonp data
+    date_view date, (err, data) ->
+      (next err; return) if err?
+      res.jsonp data
     return
   return
 
@@ -52,7 +47,10 @@ dateMiddleware = (req, res, next) ->
     res.jsonp data
     return
   if date == 'latest'
-    recent base_cb
+    recent (err, latest_date) ->
+      (next err; return) if err?
+      date_view latest_date, base_cb
+      return
   else
     date_view date, base_cb
   return

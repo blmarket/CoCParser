@@ -2,7 +2,7 @@ _ = require 'underscore'
 express = require 'express'
 bodyParser = require 'body-parser'
 
-{pool, aggregate} = require './common'
+{pool, aggregate} = require '../common'
 {searchMiddleware} = require './search'
 {dateMiddleware, recentMiddleware} = require './recent'
 cleanup = require './cleanup'

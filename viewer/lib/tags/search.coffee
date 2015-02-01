@@ -1,6 +1,6 @@
 _ = require 'underscore'
 
-{pool, aggregate} = require './common'
+{pool, aggregate} = require '../common'
 
 search = (name, cb) ->
   query = """

@@ -1,7 +1,7 @@
 _ = require 'underscore'
 mysql = require 'mysql'
 
-config = require '../../../config.json'
+config = require '../../config.json'
 
 pool = mysql.createPool config
 

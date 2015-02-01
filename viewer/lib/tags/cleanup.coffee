@@ -1,6 +1,6 @@
 _ = require 'underscore'
 
-{pool} = require './common'
+{pool} = require '../common'
 
 cleanUp = (cb) ->
   query = """
