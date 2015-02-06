@@ -1,17 +1,18 @@
 CoCParser
 ---------
 
-Clash of Clans(이하 CoC)의 클랜전 결과 스크린샷 분석기.
+Clash of Clans screenshot parser using machine learning.
+You can easily get valuable features from each clan wars.
 
-각 전투의 결과(공격자, 별 갯수)를 분석하기 위한 도구
+Try http://coc.blmarket.net/ for running example.
+
+Currently project is not yet for public use(you need to learn how to upload image, etc.), so feel free to contact me via email if you like to use and improve this project.
 
 ## Updates
 
 ### `feature.py` implementation
 
-우리편의 이름은 random forest로 학습했지만, 상대방의 이름은 그렇게 할 수 없기 때문에, 대책으로 image에서 feature point를 뽑아내어 같은 이름을 분류하는 기능을 적용함.
-
-특정 상대에 대한 공격 중에 가장 많은 별을 뽑아낸 공격자를 찾아 라벨링을 하도록 함.
+Name matcher using feature point extraction, which now enables me to 'most effective attack' feature.(see right label of my site)
 
 #### Usage
 
