@@ -53,7 +53,7 @@ def extract_orb(img):
 
 def extract_kp(img):
     kps = feature.corner_peaks(feature.corner_harris(img), min_distance = 2)
-    bb = feature.BRIEF(patch_size = 18)
+    bb = feature.BRIEF(patch_size = 5)
     bb.extract(img, kps)
     return bb.descriptors
 

@@ -3,6 +3,7 @@ import redis
 import json
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.sql import text
 from sqlalchemy import Column, Integer, String, UniqueConstraint, Unicode
 
 Base = declarative_base()
@@ -26,6 +27,12 @@ r = redis.StrictRedis()
 
 Base.metadata.create_all(engine)
 Session = sessionmaker(bind = engine)
+
+def clear_tags(date):
+    with engine.connect() as conn:
+        conn.execute(text("DELETE FROM eff_atks WHERE date = :date"), date = date)
+        conn.execute(text("DELETE FROM tags WHERE name = 'most' AND src_id IN "
+            "(SELECT id FROM src WHERE category = :date)"), date = date)
 
 def add_tag(src_id, tag_name, value):
     with engine.connect() as conn:
