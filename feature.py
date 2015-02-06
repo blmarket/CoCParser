@@ -5,7 +5,7 @@ TODO: fill this area
 """
 from sys import exit, argv
 from io import BytesIO
-from skimage import io, feature
+from skimage import io, feature, exposure
 import numpy as np
 import json
 from db_mysql import Session, Effectives
