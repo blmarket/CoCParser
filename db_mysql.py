@@ -92,4 +92,4 @@ if __name__ == "__main__":
     # print get_redis(588)
     # print get_mysql(588)
     print(len(cache_mysql(588)))
-    # clear_tags('20150207')
+    clear_tags('20150207')

@@ -6,18 +6,22 @@ TODO: fill this area
 from sys import exit, argv
 from io import BytesIO
 from skimage import io, feature, exposure
+import skimage.filter
 import numpy as np
 import json
 from db_mysql import Session, Effectives
 import db_mysql
 import itertools
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
 
 def split_attacks(x):
     """
     Return attack slits from one attack image.
     positions are pre-calculated
     """
-    return x[21:, 460:645], x[21:, 645:830]
+    return x[22:, 461:641], x[22:, 645:825]
 
 def load_image(it):
     return np.load(BytesIO(db_mysql.cache_mysql(str(it)))).reshape([52, 1024])
@@ -66,22 +70,30 @@ def extract_kp_CENSURE(img, plot = None):
         plot.scatter(d1.keypoints[:, 1], d1.keypoints[:, 0])
     return d1.keypoints
 
-def matcher(method):
-    threshold_rate = 0.85
+def dumb_matcher(img1, img2):
+    kps = lambda img: feature.corner_peaks(feature.corner_harris(img), min_distance = 2)
+    kp1 = kps(img1)
+    kp2 = kps(img2)
+    to_set = lambda aoa: set(map(lambda x: (x[0], x[1]), aoa))
+    s1 = to_set(kp1)
+    s2 = to_set(kp2)
+    return float(len(s1 & s2) * 2) / (len(s1) + len(s2))
 
-    def equal_group(it, jt):
+def matcher(img_extractor):
+    """calculate similarity
+    img_extractor: takes image, returns feature point descriptors, as of writing this method, 'extractor_kp' is good example.
+    """
+    def calculate_rate(it, jt):
         mx = feature.match_descriptors(it, jt)
-        rate = float(len(mx)) * 2 / (len(it) + len(jt))
-        if rate > threshold_rate:
-            print rate
-        return rate > threshold_rate
+        return float(len(mx) * 2) / (len(it) + len(jt))
 
-    def func(a, b):
-        return equal_group(method(a), method(b))
+    def func(img1, img2):
+        return calculate_rate(img_extractor(img1), img_extractor(img2))
     return func
 
 """Actual matcher being used"""
-default_matcher = matcher(extract_kp)
+# default_matcher = matcher(extract_kp)
+default_matcher = dumb_matcher
 
 def get_image(key):
     idx, lr = key
@@ -111,9 +123,11 @@ def reduce_groups(keys, image_src, compare):
             match = True
             for kt in dic[jt]:
                 kmg = image_src(kt)
-                if not compare(img, kmg):
+                rate = compare(img, kmg)
+                if rate < 0.70:
                     match = False
                     break
+                print('match rate : %s %s %s' % (it, jt, rate))
 
             if not match:
                 continue
@@ -133,6 +147,7 @@ def generate_groups(date):
 
 if __name__ == "__main__":
     date = argv[-1]
+    db_mysql.clear_tags(date)
     gs = generate_groups(date).values()
     s = Session()
 
