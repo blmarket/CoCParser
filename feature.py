@@ -145,8 +145,7 @@ def generate_groups(date):
 
     return reduce_groups(keys, get_image, default_matcher)
 
-if __name__ == "__main__":
-    date = argv[-1]
+def process(date):
     db_mysql.clear_tags(date)
     gs = generate_groups(date).values()
     s = Session()
@@ -172,3 +171,7 @@ if __name__ == "__main__":
 
     for it in mosts:
         db_mysql.add_tag(it, "most", mosts[it])
+
+if __name__ == "__main__":
+    date = argv[-1]
+    process(date)
