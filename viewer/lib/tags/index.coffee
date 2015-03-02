@@ -8,7 +8,7 @@ bodyParser = require 'body-parser'
 cleanup = require './cleanup'
 
 list = (date, filter, cb) ->
-  query = "SELECT tags.id, data_url, src_id, name, value, probability FROM src LEFT JOIN tags ON src.id = src_id WHERE type=1"
+  query = "SELECT tags.id, data_url, src_id, name, value, probability FROM src LEFT JOIN tags ON src.id = src_id WHERE 1"
   query += " AND category = ?" if date?
   query += " AND probability IS NOT NULL"
   query += " AND name IN (?)" if filter?
@@ -23,7 +23,6 @@ list = (date, filter, cb) ->
 
 listMiddleware = (req, res, next) ->
   filter = req.param('filter') || null
-  date = req.param('date')
   filter = filter.split ',' if filter?
   list null, filter, (err, data) ->
     (next err; return) if err?

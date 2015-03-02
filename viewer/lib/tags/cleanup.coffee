@@ -7,7 +7,7 @@ cleanUp = (cb) ->
   DELETE FROM src WHERE id IN 
       (SELECT MID FROM 
           (SELECT MIN(src_id) as MID, COUNT(*) AS CNT, category, name, value 
-           FROM src LEFT JOIN tags ON src.id = src_id WHERE type = 1 AND name = 'clan_place' 
+           FROM src LEFT JOIN tags ON src.id = src_id WHERE name = 'clan_place'
            GROUP BY category, value
           ) AS t WHERE CNT > 1
       )
