@@ -36,12 +36,19 @@ def getTrain(label):
     return rf
 
 def getPrediction(model, label):
+    ## crappy case handling...
+    where_clause = ""
+    if label == 'name':
+        where_clause = " AND src.type = '1' "
+
+    print where_clause
+
     df = pd.io.sql.read_sql_query('''
     SELECT `src`.`id` as `src_id`
     FROM `src` 
-    WHERE `id` NOT IN (SELECT `src_id` FROM `tags` WHERE `name`='%s')
+    WHERE `id` NOT IN (SELECT `src_id` FROM `tags` WHERE `name`='%s') %s
     LIMIT 1000;
-    ''' % (label), engine)
+    ''' % (label, where_clause), engine)
 
     if len(df) == 0:
         return None
@@ -60,7 +67,7 @@ def putResult(df):
     pd.io.sql.to_sql(df, 'tags', engine, if_exists='append', index=False)
 
 if __name__ == "__main__":
-    for label_name in [ 'clan_place', 'name', 'attack1', 'attack2', 'total_stars', 'atk_eff1', 'atk_eff2' ]:
+    for label_name in [ 'name', 'clan_place', 'attack1', 'attack2', 'total_stars', 'atk_eff1', 'atk_eff2' ]:
         print(label_name)
         model = getTrain(label_name)
         prediction = getPrediction(model, label_name)
