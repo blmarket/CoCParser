@@ -39,6 +39,10 @@ def write_src(L, title):
         data_fp = StringIO()
         np.save(data_fp, np.array(list(slit.flatten())))
 
+        type_id = 1
+        if title[0] == 'E':
+            type_id = 2
+
         df = pd.DataFrame([ [ data_fp.getvalue(), png.getvalue(), title, png_url, 1 ] ], columns = ['DATA', 'PNG', 'category', 'data_url', 'type'])
 
         pd.io.sql.write_frame(df, 'src', engine, flavor = 'mysql', if_exists = 'append')
