@@ -21,7 +21,7 @@ def split_attacks(x):
     Return attack slits from one attack image.
     positions are pre-calculated
     """
-    return x[22:, 461:641], x[22:, 645:825]
+    return x[22:, 461:641], x[22:, 645:825] # iPad specific
 
 orb = feature.ORB()
 
@@ -34,7 +34,7 @@ def extract_orb(img):
 
 def extract_kp(img):
     kps = feature.corner_peaks(feature.corner_harris(img), min_distance = 2)
-    bb = feature.BRIEF(patch_size = 5)
+    bb = feature.BRIEF(patch_size = 5) # iPad specific(or not)
     bb.extract(img, kps)
     return bb.descriptors
 
@@ -152,9 +152,10 @@ def process(date):
         db_mysql.add_tag(it, "most", mosts[it])
 
 def cutfront(key):
-    img = get_image(key)
-    v = np.transpose(skf.canny(img))
-    print v
+    img = np.transpose(get_image(key))
+    v = np.any(skf.canny(img), axis=1)
+    pos = next((it[0] for it in enumerate(v) if it[1] == True), None)
+    return img[pos:30] # iPad specific
 
 # if __name__ == "__main__":
 #     date = argv[-1]
