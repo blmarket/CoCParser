@@ -6,7 +6,7 @@ TODO: fill this area
 from sys import exit, argv
 from io import BytesIO
 from skimage import io, feature, exposure
-import skimage.filter
+import skimage.filter as skf
 import numpy as np
 import json
 from db_mysql import Session, Effectives
@@ -22,29 +22,6 @@ def split_attacks(x):
     positions are pre-calculated
     """
     return x[22:, 461:641], x[22:, 645:825]
-
-def load_image(it):
-    return np.load(BytesIO(db_mysql.cache_mysql(str(it)))).reshape([52, 1024])
-
-def example_check_first_occurrence():
-    """
-    For split two attack fields from one shot,
-    I checked first occurrence of feature point.
-    """
-    for it in range(4031, 4033):
-        x = load_image(it)
-
-        detector = feature.CENSURE()
-        detector.detect(x)
-
-        plt.gray()
-        plt.imshow(x)
-        print sorted(filter(lambda x: x>460, detector.keypoints[:, 1]))
-        plt.scatter(detector.keypoints[:, 1], detector.keypoints[:, 0],
-                2 ** detector.scales)
-        # plt.show()
-        # TODO: use matcher.
-
 
 orb = feature.ORB()
 
@@ -96,6 +73,8 @@ def matcher(img_extractor):
 default_matcher = dumb_matcher
 
 def get_image(key):
+    def load_image(it):
+        return np.load(BytesIO(db_mysql.cache_mysql(str(it)))).reshape([52, 1024])
     idx, lr = key
     return split_attacks(load_image(idx))[lr]
 
@@ -172,6 +151,11 @@ def process(date):
     for it in mosts:
         db_mysql.add_tag(it, "most", mosts[it])
 
-if __name__ == "__main__":
-    date = argv[-1]
-    process(date)
+def cutfront(key):
+    img = get_image(key)
+    v = np.transpose(skf.canny(img))
+    print v
+
+# if __name__ == "__main__":
+#     date = argv[-1]
+#     process(date)
