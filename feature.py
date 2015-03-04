@@ -155,7 +155,7 @@ def cutfront(key):
     img = np.transpose(get_image(key))
     v = np.any(skf.canny(img), axis=1)
     pos = next((it[0] for it in enumerate(v) if it[1] == True), None)
-    return img[pos:30] # iPad specific
+    return np.transpose(img[pos:][:30]) # iPad specific
 
 # if __name__ == "__main__":
 #     date = argv[-1]
