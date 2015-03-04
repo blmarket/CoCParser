@@ -2,7 +2,7 @@ import sqlalchemy as sa
 import json
 
 config = None
-with open('config.json') as conf:
+with open('../config.json') as conf:
     config = json.load(conf)
 
 if not config:

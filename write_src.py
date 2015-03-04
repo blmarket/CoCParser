@@ -10,7 +10,6 @@ from itertools import chain
 from parse import parse
 import pandas as pd
 import pickle
-from sqlalchemy import create_engine
 import sqlite3
 import numpy as np
 from flickr import fetch_images
@@ -18,16 +17,9 @@ from StringIO import StringIO
 from skimage import io
 import blobs
 import json
+from models import engine.get_engine
 
-config = None
-with open('config.json') as conf:
-    config = json.load(conf)
-
-if not config:
-    exit(-1)
-
-conn_str = "mysql://%s:%s@%s/%s" % (config[u'user'], config[u'password'], config['host'], config['database'])
-engine = create_engine(conn_str, encoding = 'utf8')
+engine = get_engine()
 
 def src_entries(L, title):
     for slit in L:

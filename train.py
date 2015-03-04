@@ -13,8 +13,7 @@ from sklearn.ensemble import RandomForestClassifier as RF
 from skimage import io
 import numpy as np
 import json
-import engine
-from models import db_mysql
+from models import engine, db_mysql
 
 engine = engine.get_engine()
 
