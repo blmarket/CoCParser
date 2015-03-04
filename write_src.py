@@ -29,7 +29,7 @@ if not config:
 conn_str = "mysql://%s:%s@%s/%s" % (config[u'user'], config[u'password'], config['host'], config['database'])
 engine = create_engine(conn_str, encoding = 'utf8')
 
-def write_src(L, title):
+def src_entries(L, title):
     for slit in L:
         png = StringIO()
         io.imsave(png, slit)
@@ -43,8 +43,11 @@ def write_src(L, title):
         if title[0] == 'E':
             type_id = 2
 
-        df = pd.DataFrame([ [ data_fp.getvalue(), png.getvalue(), title, png_url, type_id ] ], columns = ['DATA', 'PNG', 'category', 'data_url', 'type'])
+        yield [ data_fp.getvalue(), png.getvalue(), title, png_url, type_id ]
 
+def write_src(L, title):
+    for row in src_entries(L, title):
+        df = pd.DataFrame( [ it ], columns = [ 'DATA', 'PNG', 'category', 'data_url', 'type' ])
         pd.io.sql.write_frame(df, 'src', engine, flavor = 'mysql', if_exists = 'append')
 
 if __name__ == "__main__":
