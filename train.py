@@ -14,7 +14,7 @@ from skimage import io
 import numpy as np
 import json
 import engine
-import db_mysql
+from models import db_mysql
 
 engine = engine.get_engine()
 

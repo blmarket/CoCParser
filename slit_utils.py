@@ -3,7 +3,7 @@
 
 import numpy as np
 from io import BytesIO
-import db_mysql
+from models import db_mysql
 import skimage.filter as skf
 
 def split_attacks(x):
