@@ -11,18 +11,10 @@ engine = get_engine()
 # reflect the tables
 Base.prepare(engine, reflect=True)
 
-print Base.classes
-
 Src = Base.classes.src
 War = Base.classes.war
 Effective = Base.classes.eff_atks
 Tags = Base.classes.tags
-
-session = Session(engine)
-
-q = session.query(War)
-
-print q.count()
 
 # # mapped classes are now created with names by default
 # # matching that of the table name.
