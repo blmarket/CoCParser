@@ -37,7 +37,7 @@ def getTrain(label):
 
 def getPrediction(model, label):
     ## crappy case handling...
-    where_clause = ""
+    where_clause = " AND src.type IN ('1', '2') "
     if label == 'name':
         where_clause = " AND src.type = '1' "
 
