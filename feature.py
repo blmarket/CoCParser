@@ -4,24 +4,16 @@
 TODO: fill this area
 """
 from sys import exit, argv
-from io import BytesIO
 from skimage import io, feature, exposure
-import skimage.filter as skf
 import numpy as np
 import json
 from db_mysql import Session, Effectives
 import db_mysql
 import itertools
 import logging
+from slit_utils import get_image
 
 logging.basicConfig(level=logging.DEBUG)
-
-def split_attacks(x):
-    """
-    Return attack slits from one attack image.
-    positions are pre-calculated
-    """
-    return x[22:, 461:641], x[22:, 645:825] # iPad specific
 
 orb = feature.ORB()
 
@@ -71,12 +63,6 @@ def matcher(img_extractor):
 """Actual matcher being used"""
 # default_matcher = matcher(extract_kp)
 default_matcher = dumb_matcher
-
-def get_image(key):
-    def load_image(it):
-        return np.load(BytesIO(db_mysql.cache_mysql(str(it)))).reshape([52, 1024])
-    idx, lr = key
-    return split_attacks(load_image(idx))[lr]
 
 def reduce_groups(keys, image_src, compare):
     """Clustering similar images
@@ -150,12 +136,6 @@ def process(date):
 
     for it in mosts:
         db_mysql.add_tag(it, "most", mosts[it])
-
-def cutfront(key):
-    img = np.transpose(get_image(key))
-    v = np.any(skf.canny(img), axis=1)
-    pos = next((it[0] for it in enumerate(v) if it[1] == True), None)
-    return np.transpose(img[pos:][:30]) # iPad specific
 
 # if __name__ == "__main__":
 #     date = argv[-1]
