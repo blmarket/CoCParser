@@ -1,8 +1,9 @@
 import sqlalchemy as sa
 import json
+import os
 
 config = None
-with open('../config.json') as conf:
+with open(os.path.join(os.path.dirname(__file__), '../config.json')) as conf:
     config = json.load(conf)
 
 if not config:
