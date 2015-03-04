@@ -21,7 +21,6 @@ class Effectives(Base):
     group_id = Column(Integer, nullable = False)
     group_idx = Column(Integer, nullable = False)
 
-
 engine = e.get_engine()
 r = redis.StrictRedis()
 
