@@ -41,8 +41,6 @@ def getPrediction(model, label):
     if label == 'name':
         where_clause = " AND src.type = '1' "
 
-    print where_clause
-
     df = pd.io.sql.read_sql_query('''
     SELECT `src`.`id` as `src_id`
     FROM `src` 
