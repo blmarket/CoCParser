@@ -17,7 +17,9 @@ engine = get_engine()
 
 session = Session(engine)
 
-def add_splits(date, src_id):
+def add_splits(war):
+    date = war.date
+
     def save_img(arr):
         """saves image into src"""
         png = StringIO()
@@ -27,14 +29,23 @@ def add_splits(date, src_id):
         data_fp = StringIO()
         np.save(data_fp, arr)
 
+        row = Src(DATA = data_fp.getvalue(),\
+                data_url = png_url,\
+                type = 3)
+        session.add(row)
+        session.commit()
+        return row.id
+
         # TODO: Save image and data into src table and return its id
 
-    save_img(cutfront((src_id, 0)))
-    save_img(cutfront((src_id, 1)))
-    print src_id
+    war.atk1_src = save_img(cutfront((war.src_id, 0)))
+    war.atk2_src = save_img(cutfront((war.src_id, 1)))
+    session.commit()
 
 q = session.query(War).\
-        filter(War.enemy == 1)
+        filter(War.atk1_src == None).\
+        filter(War.date >= '20150228')
 
 for it in q:
-    add_splits(it.date, it.src_id)
+    print it
+    add_splits(it)
