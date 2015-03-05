@@ -13,11 +13,7 @@ import blobs
 from StringIO import StringIO
 from skimage import io
 
-engine = get_engine()
-
-session = Session(engine)
-
-def add_splits(war):
+def add_splits(session, war):
     date = war.date
 
     def save_img(arr):
@@ -42,10 +38,13 @@ def add_splits(war):
     war.atk2_src = save_img(cutfront((war.src_id, 1)))
     session.commit()
 
-q = session.query(War).\
-        filter(War.atk1_src == None).\
-        filter(War.date >= '20150228')
+if __name__ == "__main__":
+    engine = get_engine()
+    session = Session(engine)
+    q = session.query(War).\
+            filter(War.atk1_src == None).\
+            filter(War.date >= '20150228')
 
-for it in q:
-    print it
-    add_splits(it)
+    for it in q:
+        print it
+        add_splits(session, it)
