@@ -18,6 +18,8 @@ from skimage import io
 import blobs
 import json
 from models.engine import get_engine
+from models.models import Src, War
+from sqlalchemy.orm import Session
 
 engine = get_engine()
 
@@ -38,9 +40,18 @@ def src_entries(L, title):
         yield [ data_fp.getvalue(), png.getvalue(), title, png_url, type_id ]
 
 def write_src(L, title):
+    session = Session(engine)
     for row in src_entries(L, title):
-        df = pd.DataFrame( [ row ], columns = [ 'DATA', 'PNG', 'category', 'data_url', 'type' ])
-        pd.io.sql.write_frame(df, 'src', engine, flavor = 'mysql', if_exists = 'append')
+        src = Src(DATA = row[0], PNG = row[1], category = row[2], data_url = row[3], type = row[4])
+        session.add(src)
+        session.commit()
+
+        war = War(date = src.category, enemy = src.type - 1, src_id = src.id)
+        session.add(war)
+        session.commit()
+
+        # df = pd.DataFrame( [ row ], columns = [ 'DATA', 'PNG', 'category', 'data_url', 'type' ])
+        # pd.io.sql.write_frame(df, 'src', engine, flavor = 'mysql', if_exists = 'append')
 
 if __name__ == "__main__":
     title = sys.argv[-1]
