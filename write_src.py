@@ -17,7 +17,7 @@ from StringIO import StringIO
 from skimage import io
 import blobs
 import json
-from models import engine.get_engine
+from models.engine import get_engine
 
 engine = get_engine()
 
