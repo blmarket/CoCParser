@@ -39,7 +39,7 @@ def src_entries(L, title):
 
 def write_src(L, title):
     for row in src_entries(L, title):
-        df = pd.DataFrame( [ it ], columns = [ 'DATA', 'PNG', 'category', 'data_url', 'type' ])
+        df = pd.DataFrame( [ row ], columns = [ 'DATA', 'PNG', 'category', 'data_url', 'type' ])
         pd.io.sql.write_frame(df, 'src', engine, flavor = 'mysql', if_exists = 'append')
 
 if __name__ == "__main__":
