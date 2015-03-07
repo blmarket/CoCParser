@@ -67,10 +67,6 @@ def src_key_strategy(src_id):
 def idlist_key_strategy(category):
     return 'ids:%s' % category
 
-def attack_target_rank(src_id):
-    session = Session(engine)
-    pass
-
 def cacheFactory(base, key_strategy):
     def func(key):
         redis_key = key_strategy(key)
@@ -86,13 +82,15 @@ cache_tag = lambda x, y: cacheFactory(get_tag_from_mysql, tag_key_strategy)((x, 
 cache_attack = lambda (x, y): cache_tag(x, "attack%s" % (y+1))
 cache_ids = lambda x: json.loads(cacheFactory(get_id_list_from_mysql, idlist_key_strategy)(x))
 
+def target_rank(war_id):
+    session = Session(engine)
+    tmp = session.query(War).filter(War.id == war_id).one()
+    return compact_json(map(lambda x: cache_tag(x, 'number'),
+            [ tmp.atk1_src, tmp.atk2_src ]))
+
+cache_target_rank = cacheFactory(target_rank, lambda x: 'trank:%s' % (x))
+
 if __name__ == "__main__":
-    print cache_attack((5077, 0))
-    print cache_attack((5077, 1))
-    print cache_tag(5077, "attack1")
-    print cache_tag(5077, "attack2")
-    print cache_ids('20150124')
-    # print get_redis(588)
-    # print get_mysql(588)
-    print(len(cache_mysql(588)))
-    clear_tags('20150207')
+    print cache_target_rank(4775)
+    print cache_target_rank(4774)
+    print cache_target_rank(4773)
