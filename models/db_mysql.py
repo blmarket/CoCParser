@@ -2,7 +2,7 @@ import engine as e
 import redis
 import json
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.sql import text
 from sqlalchemy import Column, Integer, String, UniqueConstraint, Unicode
 from models import *
@@ -68,6 +68,7 @@ def idlist_key_strategy(category):
     return 'ids:%s' % category
 
 def attack_target_rank(src_id):
+    session = Session(engine)
     pass
 
 def cacheFactory(base, key_strategy):
