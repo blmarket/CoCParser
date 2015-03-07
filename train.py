@@ -26,7 +26,7 @@ def getTrain(label):
         ''' % (label), engine
     )
 
-    X = list(df['src_id'].map(lambda x: np.load(BytesIO(db_mysql.cache_mysql(x)))))
+    X = list(df['src_id'].map(lambda x: np.load(BytesIO(db_mysql.cache_mysql(x))).flatten()))
     y = df['value']
 
     rf = RF(n_estimators = 150, n_jobs = 3, verbose = 1)
@@ -34,11 +34,10 @@ def getTrain(label):
     print("Fit complete")
     return rf
 
-def getPrediction(model, label):
-    ## crappy case handling...
-    where_clause = " AND src.type IN ('1', '2') "
-    if label == 'name':
-        where_clause = " AND src.type = '1' "
+def getPrediction(model, label, source_types):
+    where_clause = " AND src.type IN %s " % (source_types)
+
+    print where_clause
 
     df = pd.io.sql.read_sql_query('''
     SELECT `src`.`id` as `src_id`
@@ -50,7 +49,7 @@ def getPrediction(model, label):
     if len(df) == 0:
         return None
 
-    X = pd.DataFrame(list(df['src_id'].map(lambda x: np.load(BytesIO(db_mysql.cache_mysql(x))))))
+    X = pd.DataFrame(list(df['src_id'].map(lambda x: np.load(BytesIO(db_mysql.cache_mysql(x))).flatten())))
     result = model.predict(X)
     probs = model.predict_proba(X)
 
@@ -64,10 +63,19 @@ def putResult(df):
     pd.io.sql.to_sql(df, 'tags', engine, if_exists='append', index=False)
 
 if __name__ == "__main__":
-    for label_name in [ 'name', 'clan_place', 'attack1', 'attack2', 'total_stars', 'atk_eff1', 'atk_eff2' ]:
+    for label_name in [ 'name', 'clan_place', 'attack1', 'attack2', 'total_stars', 'atk_eff1', 'atk_eff2', 'number' ]:
         print(label_name)
         model = getTrain(label_name)
-        prediction = getPrediction(model, label_name)
+
+        ## crappy case handling...
+        where_clause = "( '1','2' )"
+        if label_name == 'name':
+            where_clause = "( '1' )"
+        if label_name == 'number':
+            where_clause = "( '3' )"
+
+        prediction = getPrediction(model, label_name, where_clause)
         if prediction is None:
             continue
         putResult(prediction)
+
