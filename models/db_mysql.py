@@ -5,6 +5,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql import text
 from sqlalchemy import Column, Integer, String, UniqueConstraint, Unicode
+from models import *
 
 Base = declarative_base()
 
@@ -25,7 +26,6 @@ engine = e.get_engine()
 r = redis.StrictRedis()
 
 Base.metadata.create_all(engine)
-Session = sessionmaker(bind = engine)
 
 def clear_tags(date):
     with engine.connect() as conn:
@@ -66,6 +66,9 @@ def src_key_strategy(src_id):
 
 def idlist_key_strategy(category):
     return 'ids:%s' % category
+
+def attack_target_rank(src_id):
+
 
 def cacheFactory(base, key_strategy):
     def func(key):
