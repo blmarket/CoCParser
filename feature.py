@@ -66,6 +66,16 @@ def matcher(img_extractor):
 # default_matcher = matcher(extract_kp)
 default_matcher = dumb_matcher
 
+def alternative_source(key):
+    print key
+    return json.loads(db_mysql.target_rank(key[0]))[key[1]]
+
+def equal_compare(x,y):
+    if x == y:
+        return 1
+    else:
+        return 0
+
 def reduce_groups(keys, image_src, compare):
     """Clustering similar images
 
@@ -107,9 +117,10 @@ def reduce_groups(keys, image_src, compare):
 
 def generate_groups(date):
     raw_keys = itertools.product(db_mysql.cache_ids(date), xrange(2))
-    keys = itertools.ifilter(lambda x: int(db_mysql.cache_attack(x)) >= 0, raw_keys)
+    keys = itertools.ifilter(lambda x: int(alternative_source(x)) >= 0, raw_keys)
 
-    return reduce_groups(keys, get_image, default_matcher)
+    # return reduce_groups(keys, get_image, default_matcher)
+    return reduce_groups(keys, alternative_source, equal_compare)
 
 def process(date):
     db_mysql.clear_tags(date)

@@ -55,7 +55,7 @@ def update_tag_from_mysql(src_id, name, value):
 
 def get_id_list_from_mysql(category):
     with engine.connect() as conn:
-        return compact_json(map(lambda x: x[0], conn.execute("SELECT id FROM src WHERE category = '%s'" % category).fetchall()))
+        return compact_json(map(lambda x: x[0], conn.execute("SELECT id FROM war WHERE date = '%s'" % category).fetchall()))
 
 def tag_key_strategy(tup):
     src_id, name = tup
