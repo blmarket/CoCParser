@@ -55,6 +55,10 @@ def update_tag_from_mysql(src_id, name, value):
 
 def get_id_list_from_mysql(category):
     with engine.connect() as conn:
+        return compact_json(map(lambda x: x[0], conn.execute("SELECT id FROM src WHERE category = '%s'" % category).fetchall()))
+
+def war_index_mysql(category):
+    with engine.connect() as conn:
         return compact_json(map(lambda x: x[0], conn.execute("SELECT id FROM war WHERE date = '%s'" % category).fetchall()))
 
 def tag_key_strategy(tup):
@@ -66,6 +70,9 @@ def src_key_strategy(src_id):
 
 def idlist_key_strategy(category):
     return 'ids:%s' % category
+
+def war_index_key_strategy(category):
+    return 'war:ids:%s' % category
 
 def cacheFactory(base, key_strategy):
     def func(key):
@@ -81,14 +88,16 @@ cache_mysql = cacheFactory(get_mysql, src_key_strategy)
 cache_tag = lambda x, y: cacheFactory(get_tag_from_mysql, tag_key_strategy)((x, y))
 cache_attack = lambda (x, y): cache_tag(x, "attack%s" % (y+1))
 cache_ids = lambda x: json.loads(cacheFactory(get_id_list_from_mysql, idlist_key_strategy)(x))
+cache_war = lambda x: json.loads(cacheFactory(war_index_mysql, war_index_key_strategy)(x))
 
 def target_rank(war_id):
     session = Session(engine)
     tmp = session.query(War).filter(War.id == war_id).one()
-    return compact_json(map(lambda x: cache_tag(x, 'number'),
+    ret = compact_json(map(lambda x: cache_tag(x, 'number'),
             [ tmp.atk1_src, tmp.atk2_src ]))
+    return ret
 
-cache_target_rank = cacheFactory(target_rank, lambda x: 'trank:%s' % (x))
+cache_target_rank = lambda x: json.loads(cacheFactory(target_rank, lambda x: 'trank:%s' % (x)))
 
 if __name__ == "__main__":
     print cache_target_rank(4775)
