@@ -7,11 +7,13 @@ from sys import exit, argv
 from skimage import io, feature, exposure
 import numpy as np
 import json
-from models.db_mysql import Session, Effectives
+from models.db_mysql import Effectives
 from models import db_mysql
+from models.engine import get_engine
 import itertools
 import logging
 from slit_utils import get_image
+from sqlalchemy.orm import Session
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -113,7 +115,7 @@ def generate_groups(date):
 def process(date):
     db_mysql.clear_tags(date)
     gs = generate_groups(date).values()
-    s = Session()
+    s = Session(get_engine())
 
     mosts = {}
 
@@ -137,6 +139,6 @@ def process(date):
     for it in mosts:
         db_mysql.add_tag(it, "most", mosts[it])
 
-# if __name__ == "__main__":
-#     date = argv[-1]
-#     process(date)
+if __name__ == "__main__":
+    date = argv[-1]
+    process(date)

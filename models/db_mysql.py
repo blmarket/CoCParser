@@ -68,7 +68,7 @@ def idlist_key_strategy(category):
     return 'ids:%s' % category
 
 def attack_target_rank(src_id):
-
+    pass
 
 def cacheFactory(base, key_strategy):
     def func(key):
