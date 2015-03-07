@@ -80,7 +80,6 @@ def reduce_groups(keys, image_src, compare):
     Returns
     -------
     { unique_id: [ keys ] } dict
-
     """
     dic = { }
     for it in keys:
