@@ -33,7 +33,9 @@ by_date = (date, callback) ->
   target_ranks = (cb) ->
     pool.query(
       '''
-      SELECT war.*, t1.value AS target1, t2.value AS target2 FROM war 
+      SELECT war.id, war.date, src.data_url, 
+        t1.value AS target1, t2.value AS target2 FROM war 
+      JOIN src ON war.src_id = src.id
       JOIN tags AS t1 ON atk1_src = t1.src_id 
       JOIN tags AS t2 ON atk2_src = t2.src_id
       WHERE t1.name = 'number'
