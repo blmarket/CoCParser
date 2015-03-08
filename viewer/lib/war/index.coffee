@@ -51,7 +51,7 @@ by_date = (date, callback) ->
     [ ret, clouds ] = results
     for it in ret
       it.tags = clouds[it.id]
-    callback null, _.sortBy(ret, (it) -> it.tags.clan_place)
+    callback null, _.sortBy(ret, (it) -> Number(it.tags.clan_place))
     return
   return
 
