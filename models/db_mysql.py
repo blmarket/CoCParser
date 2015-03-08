@@ -47,7 +47,7 @@ def get_mysql(src_id):
 def get_tag_from_mysql(tup):
     src_id, name = tup
     with engine.connect() as conn:
-        return conn.execute("SELECT value FROM tags WHERE src_id = %s AND name = '%s'" % (src_id, name)).fetchone()[0]
+        return conn.execute("SELECT value FROM tags WHERE src_id = '%s' AND name = '%s'" % (src_id, name)).fetchone()[0]
 
 def update_tag_from_mysql(src_id, name, value):
     with engine.connect() as conn:

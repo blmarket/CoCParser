@@ -6,6 +6,7 @@ crypto = require 'crypto'
 
 tags_app = require './lib/tags'
 effectives_app = require './lib/effectives'
+war_app = require './lib/war'
 
 app = express()
 
@@ -20,6 +21,7 @@ app.use (req, res, next) ->
 app.use '/tags', tags_app.app
 app.use '/v1/tags', tags_app.app
 app.use '/v0/effectives', effectives_app.app
+app.use '/v0/war', war_app.app
 
 app.get '/:url(api|app|bower_components|assets)/*', express.static(__dirname + '/dist')
 
