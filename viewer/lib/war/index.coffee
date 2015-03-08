@@ -1,32 +1,57 @@
 _ = require 'lodash'
+async = require 'async'
 express = require 'express'
 bodyParser = require 'body-parser'
 
 {handle_recent} = require '../recent_date'
 {pool} = require '../common'
 
-date = '20150306'
-
-pool.query(
-  '''
-  SELECT war.*, t1.value AS target1, t2.value AS target2 FROM war 
-  JOIN tags AS t1 ON atk1_src = t1.src_id 
-  JOIN tags AS t2 ON atk2_src = t2.src_id
-  WHERE t1.name = 'number'
-  AND t2.name = 'number'
-  AND war.date = ?
-  ''', [ date ], (err, rows) ->
-    console.log rows
+by_date = (date, callback) ->
+  tag_clouds = (cb) ->
+    pool.query(
+      '''
+      SELECT war.id, tags.name, tags.value FROM war
+      JOIN tags ON war.src_id = tags.src_id 
+      WHERE war.date = ?
+      ''', [ date ], (err, rows) ->
+        (cb err; return) if err?
+        ret = _.mapValues(
+          _.groupBy(rows, (it) -> it.id)
+          (it) -> 
+            _.reduce(it, 
+              (res, jt) ->
+                res[jt.name] = jt.value
+                return res
+              {}
+            )
+        )
+        cb null, ret
+        return
+    )
     return
-)
 
-by_date = (date, cb) ->
-  pool.query '''
-  SELECT eff_atks.*, src.data_url AS data_url FROM eff_atks LEFT JOIN src ON src_id = src.id WHERE date = ?
-  ''', [ date ], (err, res) ->
-    (cb err; return) if err?
-    grouped = _.map(_.values(_.groupBy(res, (obj) -> obj.group_id)), (x) -> { group_id: x[0].group_id, data: x })
-    cb null, grouped
+  target_ranks = (cb) ->
+    pool.query(
+      '''
+      SELECT war.*, t1.value AS target1, t2.value AS target2 FROM war 
+      JOIN tags AS t1 ON atk1_src = t1.src_id 
+      JOIN tags AS t2 ON atk2_src = t2.src_id
+      WHERE t1.name = 'number'
+      AND t2.name = 'number'
+      AND war.date = ?
+      ''', [ date ], (err, rows) ->
+        (cb err; return) if err?
+        cb null, rows
+        return
+    )
+    return
+
+  async.parallel [ target_ranks, tag_clouds ], (err, results) ->
+    (callback err; return) if err?
+    [ ret, clouds ] = results
+    for it in ret
+      it.tags = clouds[it.id]
+    callback null, ret
     return
   return
 
@@ -38,5 +63,12 @@ app.get '/date/:date', handle_recent, (req, res, next) ->
     res.jsonp data
     return
   return
+
+# Test code here
+if require.main == module
+  by_date '20150306', (err, res) ->
+    console.log err
+    console.log res
+    return
 
 module.exports.app = app
