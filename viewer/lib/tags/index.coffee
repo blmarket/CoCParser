@@ -4,7 +4,7 @@ bodyParser = require 'body-parser'
 
 {pool, aggregate} = require '../common'
 {searchMiddleware} = require './search'
-{dateMiddleware, recentMiddleware} = require './recent'
+{dateMiddleware, recentMiddleware} = require './view'
 cleanup = require './cleanup'
 
 list = (date, filter, cb) ->
