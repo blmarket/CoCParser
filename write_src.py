@@ -50,9 +50,6 @@ def write_src(L, title):
         session.add(war)
         session.commit()
 
-        # df = pd.DataFrame( [ row ], columns = [ 'DATA', 'PNG', 'category', 'data_url', 'type' ])
-        # pd.io.sql.write_frame(df, 'src', engine, flavor = 'mysql', if_exists = 'append')
-
 if __name__ == "__main__":
     title = sys.argv[-1]
     L = chain.from_iterable(parse(filename) for filename in fetch_images(title))

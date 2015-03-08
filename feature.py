@@ -80,7 +80,6 @@ def reduce_groups(keys, image_src, compare):
     Returns
     -------
     { unique_id: [ keys ] } dict
-
     """
     dic = { }
     for it in keys:
@@ -114,8 +113,8 @@ def generate_groups(date):
 
 def process(date):
     db_mysql.clear_tags(date)
-    gs = generate_groups(date).values()
     s = Session(get_engine())
+    gs = generate_groups(date).values()
 
     mosts = {}
 
