@@ -2,20 +2,8 @@ _ = require 'lodash'
 express = require 'express'
 bodyParser = require 'body-parser'
 
-{recent} = require '../recent_date'
+{handle_recent} = require '../recent_date'
 {pool} = require '../common'
-
-handle_recent = (req, res, next) ->
-  date = req.params.date
-  if date == 'recent'
-    recent (err, recent_date) ->
-      (next err; return) if err?
-      req.params.date = recent_date
-      next()
-      return
-    return
-  next()
-  return
 
 by_date = (date, cb) ->
   pool.query '''

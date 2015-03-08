@@ -8,4 +8,17 @@ recent = (cb) ->
     return
   return
 
+handle_recent = (req, res, next) ->
+  date = req.params.date
+  if date == 'recent'
+    recent (err, recent_date) ->
+      (next err; return) if err?
+      req.params.date = recent_date
+      next()
+      return
+    return
+  next()
+  return
+
 module.exports.recent = recent
+module.exports.handle_recent = handle_recent
