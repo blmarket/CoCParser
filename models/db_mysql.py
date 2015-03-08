@@ -90,8 +90,9 @@ cache_attack = lambda (x, y): cache_tag(x, "attack%s" % (y+1))
 cache_ids = lambda x: json.loads(cacheFactory(get_id_list_from_mysql, idlist_key_strategy)(x))
 cache_war = lambda x: json.loads(cacheFactory(war_index_mysql, war_index_key_strategy)(x))
 
+# singleton session... no...
+session = Session(e.get_engine())
 def target_rank(war_id):
-    session = Session(engine)
     tmp = session.query(War).filter(War.id == war_id).one()
     ret = compact_json(map(lambda x: cache_tag(x, 'number'),
             [ tmp.atk1_src, tmp.atk2_src ]))
