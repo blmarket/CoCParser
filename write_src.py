@@ -20,6 +20,7 @@ import json
 from models.engine import get_engine
 from models.models import Src, War
 from sqlalchemy.orm import Session
+from generate_type3 import add_splits
 
 engine = get_engine()
 
@@ -49,6 +50,8 @@ def write_src(L, title):
         war = War(date = src.category, enemy = src.type - 1, src_id = src.id)
         session.add(war)
         session.commit()
+
+        add_splits(session, war)
 
 if __name__ == "__main__":
     title = sys.argv[-1]
