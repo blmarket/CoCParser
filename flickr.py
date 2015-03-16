@@ -35,7 +35,7 @@ def download_images(title):
 
 if __name__ == "__main__":
     # 1. download them
-    download_images('20141109')
+    download_images('20150316')
     # 2. list images
     # for it in fetch_images('20140501'):
     #     print it

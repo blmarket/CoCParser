@@ -1,9 +1,15 @@
 import sys
-from skimage import data, io, filter
+from skimage import data, io, filter, transform
 import numpy as np
 
 def parse(filename):
     image = io.imread(filename, as_grey = True)
+
+    if image.shape[0] != 768:
+        print "WARN: Resizing image to old iPad Size. TODO> Move forward to retina images!"
+        print image.shape
+        image = transform.resize(image, (768, 1024))
+        print image.shape
 
     ff = filter.canny(image)
     # io.imshow(ff)
