@@ -12,7 +12,7 @@ by_date = (date, callback) ->
       '''
       SELECT war.id, tags.name, tags.value FROM war
       JOIN tags ON war.src_id = tags.src_id 
-      WHERE war.date = ?
+      WHERE war.date = ? AND enemy = 0
       ''', [ date ], (err, rows) ->
         (cb err; return) if err?
         ret = _.mapValues(
