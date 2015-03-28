@@ -2,18 +2,18 @@ import sys
 from skimage import data, io, filter, transform
 import numpy as np
 
-def parse(filename):
+def preprocess(filename):
     image = io.imread(filename, as_grey = True)
 
     if image.shape[0] != 768:
+        print image.shape
         print "WARN: Resizing image to old iPad Size. TODO> Move forward to retina images!"
-        print image.shape
-        image = transform.resize(image, (768, 1024))
-        print image.shape
+        return transform.resize(image, (768, 1024))
 
+    return image
+
+def yield_slits(image):
     ff = filter.canny(image)
-    # io.imshow(ff)
-
     pi = 0
     for i in xrange(len(ff)):
         cnt = np.count_nonzero(ff[i])
@@ -22,16 +22,23 @@ def parse(filename):
             if diff > 50 and diff < 60:
                 slit = image[i-52:i]
                 yield slit
-                # data = slit.flatten()
-                # yield data
-                # io.imshow(slit)
-            if __name__ == "__main__":
-                print i, cnt, i-pi
             pi = i
-        # , ff[i].choose(set([True]))
+
+def parse(filename):
+    image = preprocess(filename)
+    return yield_slits(image)
+
+def check_and_parse(filename):
+    """
+    Check whether enemy or not, and returns slit.
+    """
+    image = preprocess(filename)
+    isEnemy = (image[55][600] < 0.7)
+    for it in yield_slits(image):
+        yield (isEnemy, it)
 
 if __name__ == "__main__":
-    if len(sys.argv) == 1:
-        sys.exit(-1)
-    for row in parse(sys.argv[-1]):
-        print row
+    io.use_plugin('pil')
+    check_and_parse("9.png")
+    for it in parse("9.png"):
+        print it
