@@ -7,6 +7,8 @@ from sqlalchemy.sql import text
 from sqlalchemy import Column, Integer, String, UniqueConstraint, Unicode
 from models import *
 
+import skimage.io
+
 Base = declarative_base()
 
 class Effectives(Base):
@@ -98,9 +100,15 @@ def target_rank(war_id):
             [ tmp.atk1_src, tmp.atk2_src ]))
     return ret
 
+def get_src_from_s3(src_id):
+    # url = 'e56e3be6-9f2d-4872-8288-0744ef4fdbf9.png'
+    url = session.query(Src).filter(Src.id == src_id).one().data_url
+    print skimage.io.imread(url, as_grey = True).flatten()
+
 cache_target_rank = lambda x: json.loads(cacheFactory(target_rank, lambda x: 'trank:%s' % (x)))
 
 if __name__ == "__main__":
-    print cache_target_rank(4775)
-    print cache_target_rank(4774)
-    print cache_target_rank(4773)
+    import numpy as np
+    from io import BytesIO
+    get_src_from_s3(12000)
+    print np.load(BytesIO(cache_mysql(12000))).flatten()
