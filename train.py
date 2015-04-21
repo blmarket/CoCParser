@@ -64,7 +64,7 @@ def getPrediction(model, label, source_types):
 
     df['name'] = label
     df['value'] = result
-    df['probability'] = map(max, probs)
+    df['probability'] = list(map(max, probs))
     df.drop('data_url', axis=1, inplace=True)
     print(df)
     return df
