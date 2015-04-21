@@ -42,7 +42,7 @@ def add_tag(src_id, tag_name, value):
 def compact_json(obj):
     return json.dumps(obj, separators=(',',':'))
 
-def get_mysql(src_id):
+def src_image_from_mysql(src_id):
     with engine.connect() as conn:
         return conn.execute('SELECT DATA FROM src WHERE id = %s' % src_id).fetchone()[0]
 
@@ -86,7 +86,12 @@ def cacheFactory(base, key_strategy):
         return val
     return func
 
-cache_mysql = cacheFactory(get_mysql, src_key_strategy)
+# TODO: don't fetch data_url from mysql, try fetch from code itself.
+def get_src_from_s3(src_id):
+    url = session.query(Src).filter(Src.id == src_id).one().data_url
+    return skimage.io.imread(url, as_grey = True)
+
+cache_mysql = cacheFactory(src_image_from_mysql, src_key_strategy)
 cache_tag = lambda x, y: cacheFactory(get_tag_from_mysql, tag_key_strategy)((x, y))
 cache_attack = lambda (x, y): cache_tag(x, "attack%s" % (y+1))
 cache_ids = lambda x: json.loads(cacheFactory(get_id_list_from_mysql, idlist_key_strategy)(x))
@@ -100,15 +105,10 @@ def target_rank(war_id):
             [ tmp.atk1_src, tmp.atk2_src ]))
     return ret
 
-def get_src_from_s3(src_id):
-    # url = 'e56e3be6-9f2d-4872-8288-0744ef4fdbf9.png'
-    url = session.query(Src).filter(Src.id == src_id).one().data_url
-    print skimage.io.imread(url, as_grey = True).flatten()
-
 cache_target_rank = lambda x: json.loads(cacheFactory(target_rank, lambda x: 'trank:%s' % (x)))
 
 if __name__ == "__main__":
     import numpy as np
     from io import BytesIO
-    get_src_from_s3(12000)
-    print np.load(BytesIO(cache_mysql(12000))).flatten()
+    print get_src_from_s3(12000)
+    print np.load(BytesIO(cache_mysql(12000)))
