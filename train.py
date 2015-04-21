@@ -20,13 +20,14 @@ engine = engine.get_engine()
 def getTrain(label):
     df = pd.io.sql.read_sql_query(
         '''
-        SELECT `src_id`, `value` FROM `tags`
+        SELECT `data_url`, `value` FROM `tags`
+        LEFT JOIN `src` ON `src_id` = `src`.`id`
         WHERE `name` = '%s' AND `probability` IS NULL
         ORDER BY `src_id` DESC LIMIT 1800
         ''' % (label), engine
     )
 
-    X = list(df['src_id'].map(lambda x: np.load(BytesIO(db_mysql.cache_mysql(x))).flatten()))
+    X = list(df['data_url'].map(lambda x: np.load(BytesIO(db_mysql.cache_mysql(x))).flatten()))
     y = df['value']
 
     rf = RF(n_estimators = 150, n_jobs = 3, verbose = 1)
