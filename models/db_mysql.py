@@ -91,8 +91,12 @@ def cacheFactory(base, key_strategy):
 
 # TODO: don't fetch data_url from mysql, try fetch from code itself.
 def get_src_from_s3(url):
-    # url = session.query(Src).filter(Src.id == src_id).one().data_url
     return skimage.io.imread(url, as_grey = True)
+
+def get_src_from_s3_using_mysql(src_id):
+    url = session.query(Src).filter(Src.id == src_id).one().data_url
+    print url
+    return get_src_from_s3(url)
 
 def target_rank(war_id):
     tmp = session.query(War).filter(War.id == war_id).one()
@@ -105,11 +109,12 @@ cache_tag = lambda x, y: cacheFactory(get_tag_from_mysql, tag_key_strategy)((x, 
 cache_attack = lambda (x, y): cache_tag(x, "attack%s" % (y+1))
 cache_ids = lambda x: json.loads(cacheFactory(get_id_list_from_mysql, idlist_key_strategy)(x))
 cache_war = lambda x: json.loads(cacheFactory(war_index_mysql, war_index_key_strategy)(x))
-cache_src = cacheFactory(get_src_from_mysql, src_key_strategy) # use same strategy, should not conflicts.
+cache_src = cacheFactory(get_src_from_s3, src_key_strategy) # use same strategy, should not conflicts.
 cache_target_rank = lambda x: json.loads(cacheFactory(target_rank, lambda x: 'trank:%s' % (x)))
 
 if __name__ == "__main__":
     import numpy as np
     from io import BytesIO
-    print get_src_from_s3(12000)
+    print get_src_from_s3_using_mysql(12000)
+    print cache_src('https://cocparser.s3.amazonaws.com/20150408/e56e3be6-9f2d-4872-8288-0744ef4fdbf9.png')
     print np.load(BytesIO(cache_mysql(12000)))
