@@ -27,7 +27,7 @@ def getTrain(label):
         ''' % (label), engine
     )
 
-    X = list(df['data_url'].map(lambda x: np.load(BytesIO(db_mysql.cache_mysql(x))).flatten()))
+    X = list(df['data_url'].map(lambda x: np.load(BytesIO(db_mysql.cache_src(x))).flatten()))
     y = df['value']
 
     rf = RF(n_estimators = 150, n_jobs = 3, verbose = 1)

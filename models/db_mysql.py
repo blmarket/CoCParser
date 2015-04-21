@@ -6,8 +6,9 @@ from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.sql import text
 from sqlalchemy import Column, Integer, String, UniqueConstraint, Unicode
 from models import *
-
+from StringIO import StringIO
 import skimage.io
+import numpy as np
 
 Base = declarative_base()
 
@@ -91,11 +92,12 @@ def cacheFactory(base, key_strategy):
 
 # TODO: don't fetch data_url from mysql, try fetch from code itself.
 def get_src_from_s3(url):
-    return skimage.io.imread(url, as_grey = True)
+    data_fp = StringIO()
+    np.save(data_fp, skimage.io.imread(url, as_grey = True))
+    return data_fp.getvalue()
 
 def get_src_from_s3_using_mysql(src_id):
     url = session.query(Src).filter(Src.id == src_id).one().data_url
-    print url
     return get_src_from_s3(url)
 
 def target_rank(war_id):
@@ -113,8 +115,7 @@ cache_src = cacheFactory(get_src_from_s3, src_key_strategy) # use same strategy,
 cache_target_rank = lambda x: json.loads(cacheFactory(target_rank, lambda x: 'trank:%s' % (x)))
 
 if __name__ == "__main__":
-    import numpy as np
     from io import BytesIO
-    print get_src_from_s3_using_mysql(12000)
-    print cache_src('https://cocparser.s3.amazonaws.com/20150408/e56e3be6-9f2d-4872-8288-0744ef4fdbf9.png')
+    # print get_src_from_s3_using_mysql(12000)
+    print np.load(BytesIO(cache_src('https://cocparser.s3.amazonaws.com/20150408/e56e3be6-9f2d-4872-8288-0744ef4fdbf9.png')))
     print np.load(BytesIO(cache_mysql(12000)))
