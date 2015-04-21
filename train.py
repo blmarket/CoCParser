@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 Train and create prediction.
@@ -14,6 +14,7 @@ from skimage import io
 import numpy as np
 import json
 from models import engine, db_mysql
+import concurrent.futures
 
 engine = engine.get_engine()
 
@@ -27,7 +28,14 @@ def getTrain(label):
         ''' % (label), engine
     )
 
-    X = list(df['data_url'].map(lambda x: np.load(BytesIO(db_mysql.cache_src(x))).flatten()))
+    def dbg(x):
+        print(x)
+        return np.load(BytesIO(db_mysql.cache_src(x))).flatten()
+
+    X = None
+    with concurrent.futures.ThreadPoolExecutor(max_workers = 4) as e:
+        X = pd.DataFrame(list(e.map(dbg, df['data_url'])))
+
     y = df['value']
 
     rf = RF(n_estimators = 150, n_jobs = 3, verbose = 1)
@@ -38,10 +46,10 @@ def getTrain(label):
 def getPrediction(model, label, source_types):
     where_clause = " AND src.type IN %s " % (source_types)
 
-    print where_clause
+    print(where_clause)
 
     df = pd.io.sql.read_sql_query('''
-    SELECT `src`.`id` as `src_id`
+    SELECT `src`.`id` as `src_id`, `data_url`
     FROM `src` 
     WHERE `id` NOT IN (SELECT `src_id` FROM `tags` WHERE `name`='%s') %s
     LIMIT 1000;
@@ -50,13 +58,14 @@ def getPrediction(model, label, source_types):
     if len(df) == 0:
         return None
 
-    X = pd.DataFrame(list(df['src_id'].map(lambda x: np.load(BytesIO(db_mysql.cache_mysql(x))).flatten())))
+    X = pd.DataFrame(list(df['data_url'].map(lambda x: np.load(BytesIO(db_mysql.cache_src(x))).flatten())))
     result = model.predict(X)
     probs = model.predict_proba(X)
 
     df['name'] = label
     df['value'] = result
     df['probability'] = map(max, probs)
+    df.drop('data_url', axis=1, inplace=True)
     print(df)
     return df
 
