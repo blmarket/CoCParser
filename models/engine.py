@@ -9,7 +9,7 @@ with open(os.path.join(os.path.dirname(__file__), '../config.json')) as conf:
 if not config:
     exit(-1)
 
-conn_str = "mysql+oursql://%s:%s@%s/%s" % (config[u'user'], config[u'password'], config['host'], config['database'])
+conn_str = "mysql+mysqldb://%s:%s@%s/%s" % (config[u'user'], config[u'password'], config['host'], config['database'])
 
 engine = sa.create_engine(conn_str, encoding = 'utf8')
 
