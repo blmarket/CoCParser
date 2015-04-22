@@ -6,8 +6,8 @@ def preprocess(filename):
     image = io.imread(filename, as_grey = True)
 
     if image.shape[0] != 768:
-        print image.shape
-        print "WARN: Resizing image to old iPad Size. TODO> Move forward to retina images!"
+        print(image.shape)
+        print("WARN: Resizing image to old iPad Size. TODO> Move forward to retina images!")
         return transform.resize(image, (768, 1024))
 
     return image
@@ -41,4 +41,4 @@ if __name__ == "__main__":
     io.use_plugin('pil')
     check_and_parse("9.png")
     for it in parse("9.png"):
-        print it
+        print(it)

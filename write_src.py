@@ -29,7 +29,7 @@ def src_entries(L, title):
         png = StringIO()
         io.imsave(png, slit)
         png_url = blobs.createBlob(title, png.getvalue())
-        print png_url, type(slit)
+        print(png_url, type(slit))
 
         data_fp = StringIO()
         np.save(data_fp, np.array(list(slit.flatten())))
