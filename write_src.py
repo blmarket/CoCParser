@@ -13,7 +13,7 @@ import pickle
 import sqlite3
 import numpy as np
 from flickr import fetch_images
-from StringIO import StringIO
+from io import BytesIO
 from skimage import io
 import blobs
 import json
@@ -26,12 +26,12 @@ engine = get_engine()
 
 def src_entries(L, title):
     for isEnemy, slit in L:
-        png = StringIO()
+        png = BytesIO()
         io.imsave(png, slit)
         png_url = blobs.createBlob(title, png.getvalue())
         print(png_url, type(slit))
 
-        data_fp = StringIO()
+        data_fp = BytesIO()
         np.save(data_fp, np.array(list(slit.flatten())))
 
         type_id = 1

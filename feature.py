@@ -106,7 +106,7 @@ def reduce_groups(keys, image_src, compare):
     return dic
 
 def generate_groups(date):
-    raw_keys = itertools.product(db_mysql.cache_ids(date), xrange(2))
+    raw_keys = itertools.product(db_mysql.cache_ids(date), range(2))
     keys = itertools.ifilter(lambda x: int(db_mysql.cache_attack(x)) >= 0, raw_keys)
 
     return reduce_groups(keys, get_image, default_matcher)

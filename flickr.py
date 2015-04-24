@@ -18,7 +18,7 @@ def fetch_images(title):
             extras = 'url_o',
             format = 'json')
 
-    photos = json.loads(res)[u'photos']['photo']
+    photos = json.loads(res.decode('utf-8'))[u'photos'][u'photo']
 
     for photo in photos:
         if photo[u'title'] != title:

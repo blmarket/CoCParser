@@ -15,7 +15,7 @@ def preprocess(filename):
 def yield_slits(image):
     ff = filter.canny(image)
     pi = 0
-    for i in xrange(len(ff)):
+    for i in range(len(ff)):
         cnt = np.count_nonzero(ff[i])
         if cnt > 800:
             diff = i - pi

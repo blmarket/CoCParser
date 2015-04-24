@@ -10,7 +10,7 @@ from slit_utils import cutfront
 
 import numpy as np
 import blobs
-from StringIO import StringIO
+from io import BytesIO
 from skimage import io
 
 def add_splits(session, war):
@@ -18,11 +18,11 @@ def add_splits(session, war):
 
     def save_img(arr):
         """saves image into src"""
-        png = StringIO()
+        png = BytesIO()
         io.imsave(png, arr)
         png_url = blobs.createBlob(date, png.getvalue())
 
-        data_fp = StringIO()
+        data_fp = BytesIO()
         np.save(data_fp, arr)
 
         row = Src(DATA = data_fp.getvalue(),\
@@ -46,5 +46,5 @@ if __name__ == "__main__":
             filter(War.date >= '20150228')
 
     for it in q:
-        print it
+        print(it)
         add_splits(session, it)

@@ -2,7 +2,7 @@ from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
 from sqlalchemy import create_engine
 
-from engine import get_engine
+from models.engine import get_engine
 
 Base = automap_base()
 

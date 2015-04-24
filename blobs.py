@@ -5,7 +5,6 @@ from itertools import chain
 from parse import parse
 import pickle
 import sqlite3
-from StringIO import StringIO
 from skimage import io
 
 import boto
