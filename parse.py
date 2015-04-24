@@ -33,7 +33,7 @@ def check_and_parse(filename):
     Check whether enemy or not, and returns slit.
     """
     image = preprocess(filename)
-    isEnemy = (image[55][600] < 0.7)
+    isEnemy = (image[55][600] < 150)
     for it in yield_slits(image):
         yield (isEnemy, it)
 
