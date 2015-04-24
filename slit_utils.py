@@ -4,7 +4,7 @@
 import numpy as np
 from io import BytesIO
 from models import db_mysql
-import skimage.filter as skf
+import skimage.feature as skf
 
 def split_attacks(x):
     """
