@@ -1,5 +1,4 @@
 import flickrapi
-from urllib import urlretrieve
 import json
 
 # TARGET_TITLE = '20140501'
@@ -26,12 +25,6 @@ def fetch_images(title):
             continue
         url = photo[u'url_o']
         yield url
-
-def download_images(title):
-    urls = list(fetch_images(title))
-    for i in range(len(urls)):
-        url = urls[i]
-        urlretrieve(url, "%d.png" % (i))
 
 if __name__ == "__main__":
     # 1. download them
