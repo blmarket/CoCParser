@@ -1,5 +1,5 @@
 import sys
-from skimage import data, io, filter, transform
+from skimage import io, transform, feature
 import numpy as np
 
 def preprocess(filename):
@@ -13,7 +13,7 @@ def preprocess(filename):
     return image
 
 def yield_slits(image):
-    ff = filter.canny(image)
+    ff = feature.canny(image)
     pi = 0
     for i in xrange(len(ff)):
         cnt = np.count_nonzero(ff[i])
