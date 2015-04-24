@@ -1,14 +1,14 @@
 import sys
-from skimage import io, transform, feature
+from skimage import io, transform, feature, img_as_ubyte
 import numpy as np
 
 def preprocess(filename):
-    image = io.imread(filename, as_grey = True)
+    image = img_as_ubyte(io.imread(filename, as_grey = True))
 
     if image.shape[0] != 768:
         print(image.shape)
         print("WARN: Resizing image to old iPad Size. TODO> Move forward to retina images!")
-        return transform.resize(image, (768, 1024))
+        return img_as_ubyte(transform.resize(image, (768, 1024)))
 
     return image
 
