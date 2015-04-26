@@ -9,6 +9,7 @@ import sqlalchemy as sa
 import pickle
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier as RF
+from sklearn.externals import joblib
 from skimage import io
 import numpy as np
 import json
@@ -39,6 +40,7 @@ def getTrain(label):
 
     rf = RF(n_estimators = 150, n_jobs = 3, verbose = 1)
     rf.fit(X, y) # 3 is good for usual multicore system
+    joblib.dump(rf, 'model.joblib.%s.pkl' % label)
     print("Fit complete")
     return rf
 
