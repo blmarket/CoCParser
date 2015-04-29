@@ -31,6 +31,7 @@ def parse(filename):
 def check_and_parse(filename):
     """
     Check whether enemy or not, and returns slit.
+    filename : file object or url, which can be read from imread
     """
     image = preprocess(filename)
     isEnemy = (image[55][600] < 150)
