@@ -11,7 +11,7 @@ RUN apt-get update && \
 
 RUN npm install -g coffee-script
 
-ADD ../config.json /root/CoCParser/config.json
+ADD ./config.json /root/CoCParser/config.json
 ADD . /root/CoCParser/viewer
 
 WORKDIR /root/CoCParser/viewer
