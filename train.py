@@ -8,7 +8,6 @@ from io import BytesIO
 import sqlalchemy as sa
 import pickle
 import pandas as pd
-from sklearn import svm
 from sklearn.ensemble import RandomForestClassifier as RF
 from skimage import io
 import numpy as np
