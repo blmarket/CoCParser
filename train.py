@@ -74,9 +74,13 @@ def putResult(df):
     pd.io.sql.to_sql(df, 'tags', engine, if_exists='append', index=False)
 
 if __name__ == "__main__":
+    import redis, lzma
+    r = redis.StrictRedis(port = 16379)
     for label_name in [ 'name', 'clan_place', 'attack1', 'attack2', 'total_stars', 'atk_eff1', 'atk_eff2', 'number' ]:
         print(label_name)
-        model = getTrain(label_name)
+
+        # r.set("model:%s" % label_name, lzma.compress(pickle.dumps(getTrain(label_name))))
+        model = pickle.loads(lzma.decompress(r.get("model:%s" % label_name)))
 
         ## crappy case handling...
         where_clause = "( '1','2' )"
