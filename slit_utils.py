@@ -19,8 +19,14 @@ def get_image(key):
     idx, lr = key
     return split_attacks(load_image(idx))[lr]
 
-def cutfront(key):
-    img = np.transpose(get_image(key))
+def __cutfront(img):
+    img = np.transpose(img)
     v = np.any(skf.canny(img), axis=1)
     pos = next((it[0] for it in enumerate(v) if it[1] == True), None)
     return np.transpose(img[pos:][:30]) # iPad specific
+
+def cutfront2(img):
+    return map(__cutfront, split_attacks(img))
+
+def cutfront(key):
+    return __cutfront(get_image(key))
