@@ -43,7 +43,7 @@ def src_entries(L, title):
 def write_src(L, title):
     session = Session(engine)
     for row in src_entries(L, title):
-        src = Src(DATA = row[0], PNG = row[1], category = row[2], data_url = row[3], type = row[4])
+        src = Src(category = row[2], data_url = row[3], type = row[4])
         session.add(src)
         session.commit()
 
