@@ -9,7 +9,6 @@ import sqlalchemy as sa
 import pickle
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier as RF
-from sklearn.externals import joblib
 from skimage import io
 import numpy as np
 import json
@@ -40,7 +39,6 @@ def getTrain(label):
 
     rf = RF(n_estimators = 150, n_jobs = 3, verbose = 1)
     rf.fit(X, y) # 3 is good for usual multicore system
-    joblib.dump(rf, 'model.joblib.%s.pkl' % label)
     print("Fit complete")
     return rf
 
@@ -75,11 +73,11 @@ def putResult(df):
 
 if __name__ == "__main__":
     import redis, lzma
-    r = redis.StrictRedis(port = 16379)
+    r = redis.StrictRedis(port = 6379)
     for label_name in [ 'name', 'clan_place', 'attack1', 'attack2', 'total_stars', 'atk_eff1', 'atk_eff2', 'number' ]:
         print(label_name)
 
-        # r.set("model:%s" % label_name, lzma.compress(pickle.dumps(getTrain(label_name))))
+        r.set("model:%s" % label_name, lzma.compress(pickle.dumps(getTrain(label_name))))
         model = pickle.loads(lzma.decompress(r.get("model:%s" % label_name)))
 
         ## crappy case handling...
