@@ -38,7 +38,7 @@ def src_entries(L, title):
         if isEnemy:
             type_id = 2
 
-        yield [ data_fp.getvalue(), png.getvalue(), title, png_url, type_id ]
+        yield [ slit, png.getvalue(), title, png_url, type_id ]
 
 def write_src(L, title):
     session = Session(engine)
@@ -51,7 +51,7 @@ def write_src(L, title):
         session.add(war)
         session.commit()
 
-        add_splits(session, war)
+        add_splits(session, war, row[0])
 
 if __name__ == "__main__":
     title = sys.argv[-1]

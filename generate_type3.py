@@ -6,14 +6,14 @@ Extract type 3 particles from images
 from models.engine import get_engine
 from models.models import War, Src
 from sqlalchemy.orm import Session
-from slit_utils import cutfront
+from slit_utils import cutfront2
 
 import numpy as np
 import blobs
 from io import BytesIO
 from skimage import io
 
-def add_splits(session, war):
+def add_splits(session, war, slit):
     date = war.date
 
     def save_img(arr):
@@ -22,11 +22,7 @@ def add_splits(session, war):
         io.imsave(png, arr)
         png_url = blobs.createBlob(date, png.getvalue())
 
-        data_fp = BytesIO()
-        np.save(data_fp, arr)
-
-        row = Src(DATA = data_fp.getvalue(),\
-                data_url = png_url,\
+        row = Src(data_url = png_url,\
                 type = 3)
         session.add(row)
         session.commit()
@@ -34,8 +30,7 @@ def add_splits(session, war):
 
         # TODO: Save image and data into src table and return its id
 
-    war.atk1_src = save_img(cutfront((war.src_id, 0)))
-    war.atk2_src = save_img(cutfront((war.src_id, 1)))
+    war.atk1_src, war.atk2_src = map(save_img, cutfront2(slit))
     session.commit()
 
 if __name__ == "__main__":
