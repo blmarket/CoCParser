@@ -23,40 +23,40 @@ def convert_urls(attachments):
     for it in attachments:
         yield download_from_mailgun(it['url'])
 
-class MainHandler(tornado.web.RequestHandler):
-    def handle_task(task):
-        from write_src import write_src as write_db 
-        title = task['title']
-        for fp in convert_urls(task['attachments']):
-            write_db(parse.check_and_parse(fp), title)
+def handle_main_task(task):
+    from write_src import write_src as write_db 
+    title = task['title']
+    for fp in convert_urls(task['attachments']):
+        write_db(parse.check_and_parse(fp), title)
 
+def handle_service_task(task):
+    for fp in convert_urls(task['attachments']):
+        print(service.main.classify(fp))
+
+class MainHandler(tornado.web.RequestHandler):
     def post(self):
         to = self.get_argument('To')
         sender = self.get_argument('sender')
-        attachments = json.loads(self.get_argument('attachments'))
+        attachments = json.loads(self.get_argument('attachments', default='[]'))
         title = self.get_argument('Subject')
 
         task = {'to': to, 'sender': sender, 'attachments': attachments, 'title': title }
         print("MainHandler", json.dumps(task))
 
-        executor.submit(handle_task, task)
+        executor.submit(handle_main_task, task)
         self.write("OK")
 
 class ServiceHandler(tornado.web.RequestHandler):
-    def handle_task(task):
-        for fp in convert_urls(task['attachments']):
-            print(service.main.classify(fp))
-
     def post(self):
         to = self.get_argument('To')
         sender = self.get_argument('sender')
-        attachments = json.loads(self.get_argument('attachments'))
+        attachments = json.loads(self.get_argument('attachments', default='[]'))
         title = self.get_argument('Subject')
 
         task = {'to': to, 'sender': sender, 'attachments': attachments, 'title': title }
         print("ServiceHandler", json.dumps(task))
 
-        executor.submit(handle_task, task)
+        executor.submit(handle_service_task, task)
 
         self.write("OK")
 
