@@ -2,7 +2,6 @@ boto==2.38.0
 certifi==2015.4.28
 decorator==3.4.2
 flickrapi==2.0
-matplotlib==1.4.3
 mock==1.0.1
 mysqlclient==1.3.6
 networkx==1.9.1
