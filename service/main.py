@@ -7,6 +7,7 @@ from urllib.parse import quote_plus
 from parse import check_and_parse
 from skimage.io import imsave
 from io import BytesIO
+import tornado.web
 
 bucket = boto.connect_s3().get_bucket('cocparser')
 base_url = 'https://cocparser.s3.amazonaws.com/'
@@ -65,6 +66,35 @@ def classify(img):
     ret['number1'] = v1
     ret['number2'] = v2
     return ret
+
+def convert_urls(attachments):
+    def download_from_mailgun(url):
+        response = requests.get(url, auth=('api', api_key))
+        return BytesIO(response.content)
+
+    for it in attachments:
+        yield download_from_mailgun(it['url'])
+
+def handle_service_task(task):
+    for url, slit in service.main.process(task['sender'], task['title'], convert_urls(task['attachments'])):
+        print(url, service.main.classify(slit))
+
+class ServiceHandler(tornado.web.RequestHandler):
+    def initialize(self, executor):
+        self.executor = executor
+
+    def post(self):
+        to = self.get_argument('To')
+        sender = self.get_argument('sender')
+        attachments = json.loads(self.get_argument('attachments', default='[]'))
+        title = self.get_argument('Subject')
+
+        task = {'to': to, 'sender': sender, 'attachments': attachments, 'title': title }
+        print("ServiceHandler", json.dumps(task))
+
+        self.executor.submit(handle_service_task, task)
+
+        self.write("OK")
 
 if __name__ == "__main__":
     image_list = [ '5.png' ]
