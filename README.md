@@ -8,18 +8,6 @@ Try http://coc.blmarket.net/ for running example.
 
 Currently project is not yet for public use(you need to learn how to upload image, etc.), so feel free to contact me via email if you like to use and improve this project.
 
-## Updates
-
-### `feature.py` implementation
-
-Name matcher using feature point extraction, which now enables me to 'most effective attack' feature.(see right label of my site)
-
-#### Usage
-
-```
-python feature.py 20150130
-```
-
 ## Modules
 
 * `flickr.py`: download images from flickr
