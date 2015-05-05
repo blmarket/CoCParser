@@ -1,2 +1,7 @@
 viewer/
 **/*.pyc
+bin/
+include/
+lib/
+man/
+share/
