@@ -65,8 +65,6 @@ app = tornado.web.Application([
     (r"/v0/post", ServiceHandler),
 ])
 
-# handle_service_task(json.loads(r'{"sender": "blmarket@gmail.com", "to": "\"coc+test@blmarket.net\" <coc+test@blmarket.net>", "title": "Testsubj", "attachments": [{"url": "https://api.mailgun.net/v2/domains/blmarket.net/messages/WyJmZGUwNTRiOWJiIiwgWyJwYWNrZWQiLCAiNGZjZTEyMDItMTIwZi00N2MwLWI0OWQtYTllN2I3YWU4MTlhIl0sICJtYWlsZ3VuIiwgIm9kaW4iXQ==/attachments/0", "content-type": "image/png", "name": "IMG_0230.PNG", "size": 1101330}, {"url": "https://api.mailgun.net/v2/domains/blmarket.net/messages/WyJmZGUwNTRiOWJiIiwgWyJwYWNrZWQiLCAiNGZjZTEyMDItMTIwZi00N2MwLWI0OWQtYTllN2I3YWU4MTlhIl0sICJtYWlsZ3VuIiwgIm9kaW4iXQ==/attachments/1", "content-type": "image/png", "name": "IMG_0231.PNG", "size": 707064}, {"url": "https://api.mailgun.net/v2/domains/blmarket.net/messages/WyJmZGUwNTRiOWJiIiwgWyJwYWNrZWQiLCAiNGZjZTEyMDItMTIwZi00N2MwLWI0OWQtYTllN2I3YWU4MTlhIl0sICJtYWlsZ3VuIiwgIm9kaW4iXQ==/attachments/2", "content-type": "image/png", "name": "IMG_0232.PNG", "size": 733250}, {"url": "https://api.mailgun.net/v2/domains/blmarket.net/messages/WyJmZGUwNTRiOWJiIiwgWyJwYWNrZWQiLCAiNGZjZTEyMDItMTIwZi00N2MwLWI0OWQtYTllN2I3YWU4MTlhIl0sICJtYWlsZ3VuIiwgIm9kaW4iXQ==/attachments/3", "content-type": "image/png", "name": "IMG_0233.PNG", "size": 699050}, {"url": "https://api.mailgun.net/v2/domains/blmarket.net/messages/WyJmZGUwNTRiOWJiIiwgWyJwYWNrZWQiLCAiNGZjZTEyMDItMTIwZi00N2MwLWI0OWQtYTllN2I3YWU4MTlhIl0sICJtYWlsZ3VuIiwgIm9kaW4iXQ==/attachments/4", "content-type": "image/png", "name": "IMG_0234.PNG", "size": 706836}]}'))
-
 if __name__ == "__main__":
     app.listen(8080)
     tornado.ioloop.IOLoop.instance().start()
