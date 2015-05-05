@@ -6,7 +6,7 @@ You can easily get valuable features from each clan wars.
 
 Try http://coc.blmarket.net/ for running example.
 
-Currently project is not yet for public use(you need to learn how to upload image, etc.), so feel free to contact me via email if you like to use and improve this project.
+Currently project is not yet for public use(you need to learn how to upload image, etc.), so feel free to contact me via email or file an issue on GitHub if you like to use and improve this project.
 
 ## Modules
 
