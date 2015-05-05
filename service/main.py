@@ -12,7 +12,7 @@ import tornado.web
 bucket = boto.connect_s3().get_bucket('cocparser')
 base_url = 'https://cocparser.s3.amazonaws.com/'
 
-def upload(objectId, fp):
+def __upload(objectId, fp):
     k = Key(bucket)
     k.key = objectId
     k.content_type = 'image/png'
@@ -26,13 +26,13 @@ def process(user, title, files):
     """
     for idx, fp in enumerate(files):
         objectId = base_path + "src/" + str(idx) + '.png'
-        url = upload(objectId, fp)
+        url = __upload(objectId, fp)
 
         for isEnemy, slit in check_and_parse(fp):
             if isEnemy: continue
             png = BytesIO()
             imsave(png, slit)
-            yield upload(base_path + "slit/" + str(uuid.uuid4()) + ".png", png), slit
+            yield __upload(base_path + "slit/" + str(uuid.uuid4()) + ".png", png), slit
 
 def prepare_models():
     import redis, lzma, pickle
@@ -76,8 +76,8 @@ def convert_urls(attachments):
         yield download_from_mailgun(it['url'])
 
 def handle_service_task(task):
-    for url, slit in service.main.process(task['sender'], task['title'], convert_urls(task['attachments'])):
-        print(url, service.main.classify(slit))
+    for url, slit in process(task['sender'], task['title'], convert_urls(task['attachments'])):
+        print(url, classify(slit))
 
 class ServiceHandler(tornado.web.RequestHandler):
     def initialize(self, executor):
