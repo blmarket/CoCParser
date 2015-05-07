@@ -8,9 +8,15 @@ from parse import check_and_parse
 from skimage.io import imsave
 from io import BytesIO
 import tornado.web
+import json
+import requests
 
 bucket = boto.connect_s3().get_bucket('cocparser')
 base_url = 'https://cocparser.s3.amazonaws.com/'
+
+api_key = None
+with open("config.json") as conf: # load from module main path
+    api_key = json.load(conf)['mailgun']
 
 def __upload(objectId, fp):
     k = Key(bucket)

@@ -12,15 +12,12 @@ from service.main import ServiceHandler, convert_urls
 import service.main
 
 executor = Executor()
-api_key = None
-
-with open("config.json") as conf:
-    api_key = json.load(conf)['mailgun']
 
 def handle_main_task(task):
     from write_src import write_src as write_db 
     title = task['title']
     for fp in convert_urls(task['attachments']):
+        print(fp)
         write_db(parse.check_and_parse(fp), title)
 
 class MainHandler(tornado.web.RequestHandler):
