@@ -13,6 +13,14 @@ import requests
 
 bucket = boto.connect_s3().get_bucket('cocparser')
 base_url = 'https://cocparser.s3.amazonaws.com/'
+r = None
+with open("config.json", "r") as fp:
+    obj = json.load(fp)
+    if "redis" in obj:
+        print("using redis from config")
+        r = redis.StrictRedis(unix_socket_path=obj["redis"], db=0)
+    else:
+        r = redis.StrictRedis(db=0)
 
 def __upload(objectId, fp):
     k = Key(bucket)
@@ -39,7 +47,6 @@ def process(task_id, file_path):
 
 def prepare_models():
     import redis, lzma, pickle
-    r = redis.StrictRedis(port = 6379)
     def get_model(label):
         model = pickle.loads(lzma.decompress(r.get("model:%s" % label)))
         model.verbose = 0
