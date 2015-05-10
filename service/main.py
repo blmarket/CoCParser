@@ -31,9 +31,6 @@ def process(user, title, files):
     process files to s3
     """
     for idx, fp in enumerate(files):
-        objectId = base_path + "src/" + str(idx) + '.png'
-        url = __upload(objectId, fp)
-
         for isEnemy, slit in check_and_parse(fp):
             if isEnemy: continue
             png = BytesIO()
