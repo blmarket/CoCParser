@@ -21,16 +21,21 @@ def __upload(objectId, fp):
     k.set_contents_from_file(fp, reduced_redundancy = True, rewind = True)
     return base_url + objectId
 
-def process(user, title, files):
-    base_path = "v0/" + quote_plus(user) + "/" + quote_plus(title) + "/"
+def process(task_id, file_path):
+    base_path = "v0/" + task_id + "/"
     """
     process files to s3
     """
-    for idx, fp in enumerate(files):
-        for isEnemy, slit in check_and_parse(fp):
-            png = BytesIO()
-            imsave(png, slit)
-            yield __upload(base_path + "slit/" + str(uuid.uuid4()) + ".png", png), slit
+
+    k = Key(bucket)
+    k.key = base_path + "source.png"
+    k.content_type = 'image/png' # TODO: use mime from task itself(at least web server knows)
+    k.set_contents_from_filename(file_path)
+
+    for isEnemy, slit in check_and_parse(file_path):
+        png = BytesIO()
+        imsave(png, slit)
+        yield __upload(base_path + "slit/" + str(uuid.uuid4()) + ".png", png), slit
 
 def prepare_models():
     import redis, lzma, pickle
