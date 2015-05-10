@@ -28,7 +28,6 @@ def process(user, title, files):
     """
     for idx, fp in enumerate(files):
         for isEnemy, slit in check_and_parse(fp):
-            if isEnemy: continue
             png = BytesIO()
             imsave(png, slit)
             yield __upload(base_path + "slit/" + str(uuid.uuid4()) + ".png", png), slit

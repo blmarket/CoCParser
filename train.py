@@ -77,7 +77,7 @@ if __name__ == "__main__":
     for label_name in [ 'name', 'clan_place', 'attack1', 'attack2', 'total_stars', 'atk_eff1', 'atk_eff2', 'number' ]:
         print(label_name)
 
-        # r.set("model:%s" % label_name, lzma.compress(pickle.dumps(getTrain(label_name))))
+        r.set("model:%s" % label_name, lzma.compress(pickle.dumps(getTrain(label_name))))
         model = pickle.loads(lzma.decompress(r.get("model:%s" % label_name)))
 
         ## crappy case handling...
