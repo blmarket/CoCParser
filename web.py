@@ -35,7 +35,6 @@ class MainHandler(tornado.web.RequestHandler):
 
 app = tornado.web.Application([
     (r"/post", MainHandler),
-    (r"/v0/post", ServiceHandler, dict(executor = executor)),
 ])
 
 if __name__ == "__main__":
