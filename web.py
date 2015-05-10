@@ -7,7 +7,7 @@ from io import BytesIO
 import parse
 from concurrent.futures import ProcessPoolExecutor as Executor
 
-from service.main import ServiceHandler, convert_urls
+from service.main import convert_urls
 
 import service.main
 
