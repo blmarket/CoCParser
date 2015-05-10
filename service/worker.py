@@ -8,7 +8,14 @@ import time
 import json
 from service.main import process, classify
 
-r = redis.StrictRedis(db = 1)
+r = None
+with open("config.json", "r") as fp:
+    obj = json.load(fp)
+    if "redis" in obj:
+        print("using redis from config")
+        r = redis.StrictRedis(unix_socket_path=obj["redis"], db=1)
+    else:
+        r = redis.StrictRedis(db=1)
 
 QUEUE_NAME = "jobq:task"
 
