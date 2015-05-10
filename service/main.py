@@ -13,14 +13,24 @@ import requests
 
 bucket = boto.connect_s3().get_bucket('cocparser')
 base_url = 'https://cocparser.s3.amazonaws.com/'
+api_key = None
 r = None
 with open("config.json", "r") as fp:
     obj = json.load(fp)
+    api_key = obj['mailgun']
     if "redis" in obj:
         print("using redis from config")
         r = redis.StrictRedis(unix_socket_path=obj["redis"], db=0)
     else:
         r = redis.StrictRedis(db=0)
+
+def convert_urls(attachments):
+    def download_from_mailgun(url):
+        response = requests.get(url, auth=('api', api_key))
+        return BytesIO(response.content)
+
+    for it in attachments:
+        yield download_from_mailgun(it['url'])
 
 def __upload(objectId, fp):
     k = Key(bucket)
