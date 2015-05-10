@@ -40,7 +40,9 @@ def prepare_models():
         model.verbose = 0
         return model
     labels = [ 'total_stars', 'clan_place', 'atk_eff1', 'attack1', 'atk_eff2', 'attack2' ]
-    return zip(labels, map(get_model, labels)), get_model('number')
+    return list(zip(labels, map(get_model, labels))), get_model('number')
+
+models, model_number = prepare_models()
 
 def classify(img):
     import skimage.io
@@ -54,13 +56,12 @@ def classify(img):
     def predict_with_prob(model, data):
         return sorted(list(np.dstack([ model.classes_, model.predict_proba(img.flatten())[0] ])[0]), key = lambda x: -x[1])[0]
 
-    models, m2 = prepare_models()
     for k, model in models:
         prediction = model.predict(fl.flatten())[0]
         ret[k] = prediction
 
     a, b = cutfront2(img)
-    v1, v2 = map(lambda x: m2.predict(x.flatten())[0], (a,b))
+    v1, v2 = map(lambda x: model_number.predict(x.flatten())[0], (a,b))
     ret['number1'] = v1
     ret['number2'] = v2
     return ret
