@@ -1,9 +1,0 @@
-extends layout
-
-block contents
-  div(ng-controller='RecentCtrl', ng-init='load()')
-    div(ng-repeat='sample in entries')
-      div(ng-if='$first || sample.date != entries[$index-1].date')
-        p: b {{sample.date}}
-      a(ng-click='search(sample)')
-        img(src='{{sample.image_url}}')

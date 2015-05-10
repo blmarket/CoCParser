@@ -15,6 +15,7 @@ Src = Base.classes.src
 War = Base.classes.war
 Effective = Base.classes.eff_atks
 Tags = Base.classes.tags
+Public_v0 = Base.classes.public_v0
 
 # For eff_ackts table, refer db_mysql.py
 
