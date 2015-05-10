@@ -17,4 +17,4 @@ COPY . /usr/src/app
 
 EXPOSE 8080
 
-CMD [ "python", "web.py" ]
+CMD [ "python", "-m", "service.worker" ]
