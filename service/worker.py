@@ -27,8 +27,7 @@ while True:
     result = []
     for url, slit in process(task_info[b'id'], task_info[b'title'], [ task_info[b'path'].decode('utf-8') ]):
         info = classify(slit)
-        info['url'] = url
-        result += [ info ]
+        result += [ { 'url': url, 'prediction': info } ]
     r.hset(task, "result", json.dumps(result))
     r.hset(task, "status", "done")
     r.publish("c:task", task)
